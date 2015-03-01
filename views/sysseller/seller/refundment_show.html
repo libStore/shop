@@ -1,0 +1,85 @@
+<article class="module width_full">
+	<header>
+		<h3 class="tabs_involved">商品退款详情</h3>
+	</header>
+
+	<form action="{url:/seller/refundment_update}" name="refundForm" method="post">
+		<div class="module_content">
+			<fieldset>
+				<label>订单号:</label>
+				<div class="box">{$order_no}</div>
+			</fieldset>
+
+			<fieldset>
+				<label>订单时间:</label>
+				<div class="box">{$create_time}</div>
+			</fieldset>
+
+			<fieldset>
+				<label>用户名:</label>
+				<div class="box">{$username}</div>
+			</fieldset>
+
+			<fieldset>
+				<label>退款金额:</label>
+				<div class="box">{$amount}</div>
+			</fieldset>
+
+			<fieldset>
+				<label>退款商品:</label>
+				<div class="box">
+					{query:name=order_goods where=order_id eq $order_id and goods_id eq $goods_id and product_id eq $product_id}
+					{set:$goods = JSON::decode($item['goods_array'])}
+					{$goods['name']} X {$item['goods_nums']}件
+					【{echo:Order_Class::goodsSendStatus($item['is_send'])}】
+					{/query}
+				</div>
+			</fieldset>
+
+			<fieldset>
+				<label>退款原因:</label>
+				<div class="box">{$content}</div>
+			</fieldset>
+
+			{if:$pay_status == 0 && Order_Class::isSellerRefund($id,$this->seller['seller_id']) == 2}
+			<input type="hidden" name="id" value="{$id}" />
+			<fieldset>
+				<label>处理状态</label>
+				<div class="box">
+					<input type='radio' name='pay_status' value='1' />拒绝
+					<input type='radio' name='pay_status' value='2' />同意
+				</div>
+			</fieldset>
+
+			<fieldset>
+				<label>处理回复:</label>
+				<div class="box"><textarea class="textarea" name="dispose_idea"></textarea></div>
+			</fieldset>
+
+			{else:}
+
+			<fieldset>
+				<label>处理状态</label>
+				<div class="box">{echo:Order_Class::refundmentText($pay_status)}</div>
+			</fieldset>
+
+			<fieldset>
+				<label>处理时间:</label>
+				<div class="box">{$dispose_time}</div>
+			</fieldset>
+
+			<fieldset>
+				<label>处理回复:</label>
+				<div class="box">{$dispose_idea}</div>
+			</fieldset>
+			{/if}
+		</div>
+
+		<footer>
+			<div class="submit_link">
+				<input type="submit" class="alt_btn" value="确 定" />
+				<input type="reset" value="重 置" />
+			</div>
+		</footer>
+	</form>
+</article>

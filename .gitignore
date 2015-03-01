@@ -1,0 +1,8 @@
+/.idea
+runtime/*
+!runtime/.gitkeep
+backup/*
+!backup/.gitkeep
+!backup/upgrade/.gitkeep
+upload/*
+!upload/.gitkeep

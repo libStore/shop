@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" style="overflow-y:auto">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>管理后台</title>
+	<link rel="stylesheet" href="{skin:css/admin.css}" />
+	{js:jquery}
+	{js:dialog}
+	{js:form}
+	{js:validate}
+	<script type='text/javascript' src="{theme:javascript/admin.js}"></script>
+</head>
+
+<body style="width:600px;min-height:400px;">
+<div class="pop_win">
+	<form action="{url:/order/order_refundment_doc}" method="post">
+		<input type="hidden" name="refunds_id" value="{$refunds['id']}"/>
+		<input type="hidden" name="id" value="{$order_id}"/>
+		<input type="hidden" name="order_no" value="{$order_no}"/>
+		<input type="hidden" name="user_id" value="{$user_id}"/>
+
+		<table width="95%" class="border_table" style="margin:10px auto">
+			<colgroup>
+				<col width="100px" />
+				<col />
+			</colgroup>
+
+			<tbody>
+				<tr>
+					<th>订单号:</th><td align="left">{$order_no}</td>
+				</tr>
+				<tr>
+					<th>下单时间:</th><td align="left">{$create_time}</td>
+				</tr>
+				<tr>
+					<th>应付商品金额:</th>
+					<td align="left">{$payable_amount}</td>
+				</tr>
+				<tr>
+					<th>实际支付商品金额:</th>
+					<td align="left">{$real_amount}</td>
+				</tr>
+				<tr>
+					<th>应付运费金额:</th>
+					<td align="left">{$payable_freight}</td>
+				</tr>
+				<tr>
+					<th>实际支付运费金额:</th>
+					<td align="left">{$real_freight}</td>
+				</tr>
+
+				{if:$if_insured == 1}
+				<tr>
+					<th>订单保价金额:</th>
+					<td align="left">{$insured}</td>
+				</tr>
+				{/if}
+
+				{if:$pay_fee > 0}
+				<tr>
+					<th>订单支付手续费金额:</th>
+					<td align="left">{$pay_fee}</td>
+				</tr>
+				{/if}
+
+				{if:$invoice == 1}
+				<tr>
+					<th>订单税金金额:</th>
+					<td align="left">{$taxes}</td>
+				</tr>
+				{/if}
+
+				{if:$promotions > 0}
+				<tr>
+					<th>订单优惠金额:</th>
+					<td align="left">{$promotions}</td>
+				</tr>
+				{/if}
+
+				{if:$discount != 0}
+				<tr>
+					<th>订单价格修改:</th>
+					<td align="left">{$discount}</td>
+				</tr>
+				{/if}
+
+				<tr>
+					<th>订单总额:</th>
+					<td align="left">{$order_amount}</td>
+				</tr>
+				<tr>
+					<th>退款商品:</th>
+					<td align="left">
+					{if:isset($refunds)}
+						{query:name=order_goods where=order_id eq $refunds[order_id] and goods_id eq $refunds[goods_id] and product_id eq $refunds[product_id]}
+						{set:$goods = JSON::decode($item['goods_array'])}
+						{$goods['name']} X {$item['goods_nums']}件
+						【{echo:Order_Class::goodsSendStatus($item['is_send'])}】
+						{/query}
+						{if:$refunds['seller_id']}
+						<a href="{url:/site/home/id/$refunds['seller_id']}" target="_blank"><img src="{skin:images/admin/seller_ico.png}" /></a>
+						{/if}
+					{else:}
+						{foreach:items=Api::run('getOrderGoodsListByGoodsid',array('#order_id#',$order_id)) item=$good}
+						{set:$good_info = JSON::decode($good['goods_array'])}
+						{if:$good['is_send'] != 2}
+						<label>
+							<input type="radio" name="order_goods_id" value="{$good['id']}" onclick="countGoodsAmount({echo:$good['goods_nums']*$good['real_price']});" />
+							<a class="blue" href="{url:/site/products/id/$good['goods_id']}" target='_blank'>{$good_info['name']}{if:$good_info['value']}{$good_info['value']}{/if} X {$good['goods_nums']}件</a>
+						</label>
+						<br/>
+						{/if}
+						{/foreach}
+					{/if}
+					</td>
+				</tr>
+				<tr>
+					<th>退款商品金额:</th><td align="left"><input type="text" class="small" name="amount" id="amount" value="{$refunds['amount']}" pattern="float" /></td>
+				</tr>
+				<tr>
+					<th>说明:</th>
+					<td align="left">点击退款后，<退款金额>将直接转入到用户的余额中</td>
+				</tr>
+			</tbody>
+		</table>
+	</form>
+</div>
+</body>
+<script type="text/javascript">
+//计算商品退款金额
+function countGoodsAmount(amount)
+{
+	$('#amount').val(amount);
+}
+</script>
+</html>
