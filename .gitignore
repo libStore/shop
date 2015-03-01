@@ -6,3 +6,4 @@ backup/*
 !backup/upgrade/.gitkeep
 upload/*
 !upload/.gitkeep
+/backup
