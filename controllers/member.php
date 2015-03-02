@@ -398,6 +398,127 @@ class Member extends IController
 	}
 
 	/**
+	 * @brief 身份添加
+	 */
+	function identity_edit()
+	{
+		$gid = (int)IReq::get('gid');
+		//编辑会员等级信息 读取会员等级信息
+		if($gid)
+		{
+			$tb_user_identity = new IModel('user_identity');
+			$identity_info = $tb_user_identity->query("id=".$gid);
+
+			if(is_array($identity_info) && ($info=$identity_info[0]))
+			{
+				$this->data['identity'] = array(
+					'identity_id'	=>	$info['id'],
+					'identity_name'=>	$info['identity_name'],
+					'discount'	=>	$info['discount'],
+					'minexp'	=>	$info['minexp'],
+					'maxexp'	=>	$info['maxexp']
+				);
+			}
+			else
+			{
+				$this->redirect('identity_list',false);
+				Util::showMessage("没有找到相关记录！");
+				return;
+			}
+		}
+		$this->setRenderData($this->data);
+		$this->redirect('identity_edit');
+	}
+
+	/**
+	 * @brief 保存身份修改
+	 */
+	function identity_save()
+	{
+		$identity_id = IFilter::act(IReq::get('identity_id'),'int');
+		$maxexp   = IFilter::act(IReq::get('maxexp'),'int');
+		$minexp   = IFilter::act(IReq::get('minexp'),'int');
+		$discount = IFilter::act(IReq::get('discount'),'float');
+		$identity_name = IFilter::act(IReq::get('identity_name'));
+
+		$identity = array(
+			'maxexp' => $maxexp,
+			'minexp' => $minexp,
+			'discount' => $discount,
+			'identity_name' => $identity_name
+		);
+
+		if($discount > 100)
+		{
+			$errorMsg = '折扣率不能大于100';
+		}
+
+		if($maxexp <= $minexp)
+		{
+			$errorMsg = '最大经验值必须大于最小经验值';
+		}
+
+		if(isset($errorMsg) && $errorMsg)
+		{
+			$identity['identity_id'] = $identity_id;
+			$data = array($identity);
+
+			$this->setRenderData($data);
+			$this->redirect('identity_edit',false);
+			Util::showMessage($errorMsg);
+			exit;
+		}
+		$tb_user_identity = new IModel("user_identity");
+		$tb_user_identity->setData($identity);
+
+		if($identity_id)
+		{
+			$affected_rows = $tb_user_identity->update("id=".$identity_id);
+			if($affected_rows)
+			{
+				$this->redirect('identity_list',false);
+				Util::showMessage('更新身份成功！');
+				return;
+			}
+			$this->redirect('identity_list',false);
+		}
+		else
+		{
+			$gid = $tb_user_identity->add();
+			$this->redirect('identity_list',false);
+			if($gid)
+			{
+				Util::showMessage('添加身份成功！');
+			}
+			else
+			{
+				Util::showMessage('添加身份失败！');
+			}
+		}
+	}
+
+	/**
+	 * @brief 删除身份
+	 */
+	function identity_del()
+	{
+		$identity_ids = IReq::get('check');
+		$identity_ids = is_array($identity_ids) ? $identity_ids : array($identity_ids);
+		$identity_ids = IFilter::act($identity_ids,'int');
+		if($identity_ids)
+		{
+			$ids = implode(',',$identity_ids);
+			if($ids)
+			{
+				$tb_user_identity = new IModel('user_identity');
+				$where = "id in (".$ids.")";
+				$tb_user_identity->del($where);
+			}
+		}
+		$this->redirect('identity_list');
+	}
+
+	/**
 	 * @brief 回收站
 	 */
 	function recycling()

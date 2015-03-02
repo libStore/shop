@@ -179,7 +179,7 @@ function install_sql()
 	}
 
 	//检测SQL安装文件
-	$sql_file = ROOT_PATH.'./install/appoil.sql';
+	$sql_file = ROOT_PATH.'./install/install.sql';
 	if(!file_exists($sql_file))
 	{
 		showProgress(array('isError' => true,'message' => '安装的SQL文件'.basename($sql_file).'不存在'));

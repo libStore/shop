@@ -7,7 +7,7 @@ class checkConfig
 	private $must_extension  = array('mysqli','gd','xml','session','iconv');
 	private $recom_extension = array('zip','curl','OpenSSL','sockets','mbstring');
 	private $writeable_dir   = array('.','config','config/config.php','config/site_config.php','install','backup','backup/upgrade','index.php','upload','runtime');
-	private $readable_dir    = array('config/config_default.php','install/appoil.sql');
+	private $readable_dir    = array('config/config_default.php','install/install.sql');
 	private $php_ini         = array('safe_mode' => array('type' => '=','value' => false),'allow_url_fopen' => array('type' => '=','value' => '1'),'memory_limit' => array('type' => '>','value' => '12M'),'asp_tags' => array('type' => '=','value' => false));
 	private $php_function    = array('unlink','mkdir','filemtime','fopen','fwrite','fclose','session_start');
 

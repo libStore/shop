@@ -28,7 +28,18 @@
 						<th>确认密码：</th><td><input class="normal" name="repassword" type="password" /><label>确认密码</label></td>
 					</tr>
 					<tr>
-						<th>会员组：</th>
+						<th>会员分组：</th>
+						<td>
+							<select class="normal" name="group_id">
+								<option value=''>请选择</option>
+								{query:name=user_group}
+								<option value="{$item['id']}">{$item['group_name']}</option>
+								{/query}
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th>会员身份：</th>
 						<td>
 							<select class="normal" name="group_id">
 								<option value=''>请选择</option>
