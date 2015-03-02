@@ -1,7 +1,7 @@
 /.idea
+/upload/*
+/runtime/*
+/backup/upgrade/*
 !runtime/.gitkeep
 !backup/upgrade/.gitkeep
 !upload/.gitkeep
-/upload
-/runtime
-/backup
