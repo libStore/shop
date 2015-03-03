@@ -11,7 +11,8 @@
 					<option value="m.true_name">姓名</option>
 					<option value="m.telephone">电话</option>
 					<option value="m.mobile">手机</option>
-					<option value="u.email">Email</option>
+					<option value="m.id_number">身份证</option>
+					<option value="u.email">邮箱</option>
 				</select>
 				<input class="small" name="keywords" type="text" value="{$keywords}" />
 				<button class="btn" type="submit"><span class="sch">搜 索</span></button>
@@ -32,10 +33,10 @@
 				<col width="80px" />
 				<col width="80px" />
 				<col width="50px" />
-				<col width="140px"/>
 				<col width="80px" />
 				<col width="80px" />
 				<col width="50px" />
+                <col width="140px"/>
 				<col width="125px" />
 				<col width="120px" />
 				<col />
@@ -45,15 +46,16 @@
 				<tr>
 					<th class="t_c">选择</th>
 					<th>用户名</th>
-					<th>会员等级</th>
+					<th>分组</th>
 					<th>姓名</th>
 					<th>性别</th>
-					<th>Email</th>
 					<th>余额</th>
 					<th>积分</th>
 					<th>状态</th>
 					<th>注册日期</th>
-					<th>手机</th>
+                    <th>电子邮箱</th>
+					<th>手机号码</th>
+					<th>身份证号码</th>
 					<th>操作</th>
 				</tr>
 			</thead>
@@ -70,10 +72,10 @@
 				<col width="80px" />
 				<col width="80px" />
 				<col width="50px" />
-				<col width="140px"/>
 				<col width="80px" />
 				<col width="80px" />
 				<col width="50px" />
+                <col width="140px"/>
 				<col width="125px" />
 				<col width="120px" />
 				<col />
@@ -88,12 +90,13 @@
 					<td title="{$group[$item['group_id']]}">{$group[$item['group_id']]}</td>
 					<td title="{$item['true_name']}">{$item['true_name']}</td>
 					<td>{if:$item['sex']=='1'}男{else:}女{/if}</td>
-					<td title="{$item['email']}">{$item['email']}</td>
 					<td title="{$item['balance']}">{$item['balance']}</td>
 					<td title="{$item['point']}">{$item['point']}</td>
 					<td title="{echo:Common::userStatusText($item['status'])}">{echo:Common::userStatusText($item['status'])}</td>
 					<td title="{$item['time']}">{$item['time']}</td>
+                    <td title="{$item['email']}">{$item['email']}</td>
 					<td title="{$item['mobile']}">{$item['mobile']}</td>
+					<td title="{$item['id_number']}">{$item['id_number']}</td>
 					<td>
 						<a href="{url:/member/member_edit/uid/$item[user_id]}"><img class="operator" src="{skin:images/admin/icon_edit.gif}" alt="修改" /></a>
 						<a href="javascript:void(0)" onclick="delModel({link:'{url:/member/member_reclaim/check/$item[user_id]}'})"><img class="operator" src="{skin:images/admin/icon_del.gif}" alt="删除" /></a>

@@ -19,7 +19,12 @@
 					</tr>
 					<tr>
 						<th>邮箱：</th>
-						<td><input type="text" class="normal" name="email" pattern="email" alt="邮箱错误" /><label>* 邮箱（必填）</label></td>
+						<td>
+                            <input type="text" class="normal" name="email" pattern="email" alt="邮箱错误" />
+                            <label>* 邮箱（必填）</label>
+                            <label><input name="verify_email" type="radio" value="0" checked="checked" />未认证</label>
+                            <label><input name="verify_email" type="radio" value="1" />已认证</label>
+                        </td>
 					</tr>
 					<tr>
 						<th>密码：</th><td><input class="normal" name="password" type="password" /><label>登录密码</label></td>
@@ -29,17 +34,6 @@
 					</tr>
 					<tr>
 						<th>会员分组：</th>
-						<td>
-							<select class="normal" name="group_id">
-								<option value=''>请选择</option>
-								{query:name=user_group}
-								<option value="{$item['id']}">{$item['group_name']}</option>
-								{/query}
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<th>会员身份：</th>
 						<td>
 							<select class="normal" name="group_id">
 								<option value=''>请选择</option>
@@ -64,8 +58,23 @@
 						<th>电话：</th><td><input class="normal" name="telephone" type="text" value="" empty pattern="phone" alt="格式不正确 格式：（地区号-）用户号（-分机号）如010-66668888-123" /><label>格式：（地区号-）用户号（-分机号）如010-66668888-123</label></td>
 					</tr>
 					<tr>
-						<th>手机：</th><td><input class="normal" name="mobile" type="text" value="" empty pattern="mobi" alt="格式不正确" /><label>手机号码</label></td>
+						<th>手机：</th>
+                        <td>
+                            <input class="normal" name="mobile" type="text" value="" empty pattern="mobi" alt="格式不正确" />
+                            <label>手机号码</label>
+                            <label><input name="verify_mobi" type="radio" value="0" checked="checked" />未认证</label>
+                            <label><input name="verify_mobi" type="radio" value="1" />已认证</label>
+                        </td>
 					</tr>
+                    <tr>
+                        <th>身份证号码：</th>
+                        <td>
+                            <input class="normal"ame="id_number" type="text" value="" />
+                            <label>身份证号码</label>
+                            <label><input name="verify_idno" type="radio" value="0" checked="checked" />未认证</label>
+                            <label><input name="verify_idno" type="radio" value="1" />已认证</label>
+                        </td>
+                    </tr>
 					<tr>
 						<th>地区：</th>
 						<td>

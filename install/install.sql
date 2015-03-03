@@ -720,7 +720,7 @@ CREATE TABLE `{pre}member` (
   `user_id` int(11) unsigned  NOT NULL COMMENT '用户ID',
   `true_name` varchar(50) default NULL COMMENT '真实姓名',
   `telephone` varchar(50) default NULL COMMENT '联系电话',
-  `mobile` varchar(20) default NULL COMMENT '手机',
+  `mobile` varchar(20) default NULL COMMENT '手机号码',
   `area` varchar(255) default NULL COMMENT '地区',
   `contact_addr` varchar(250) default NULL COMMENT '联系地址',
   `qq` varchar(15) default NULL COMMENT 'QQ',
@@ -729,7 +729,10 @@ CREATE TABLE `{pre}member` (
   `birthday` date default NULL COMMENT '生日',
   `group_id` int(11) default NULL COMMENT '群组',
   `level_id` int(11) default NULL COMMENT '级别',
-  `identity_id` int(11) default NULL COMMENT '身份',
+  `id_number` int(11) default NULL COMMENT '身份证号码',
+  `verify_mobi` tinyint(1) NOT NULL default '0' COMMENT '手机号码认证：-1认证失败 0未做认证，1认证成功',
+  `verify_idno` tinyint(1) NOT NULL default '0' COMMENT '真实身份认证：-1认证失败 0未做认证，1认证成功',
+  `verify_email` tinyint(1) NOT NULL default '0' COMMENT '电子邮件认证：-1认证失败 0未做认证，1认证成功',
   `exp` int(11) NOT NULL default '0' COMMENT '经验值',
   `point` int(11) NOT NULL default '0' COMMENT '积分',
   `message_ids` text COMMENT '消息ID',
@@ -743,7 +746,7 @@ CREATE TABLE `{pre}member` (
   PRIMARY KEY  (`user_id`),
   index (`group_id`),
   index (`level_id`),
-  index (`identity_id`),
+  index (`id_number`),
   index (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户信息表';
 

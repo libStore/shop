@@ -57,6 +57,7 @@ class Member extends IController
 		$sex        = IFilter::act(IReq::get('sex'),'int');
 		$telephone  = IFilter::act(IReq::get('telephone'));
 		$mobile     = IFilter::act(IReq::get('mobile'));
+		$id_number     = IFilter::act(IReq::get('id_number'));
 		$province   = IFilter::act(IReq::get('province'),'int');
 		$city       = IFilter::act(IReq::get('city'),'int');
 		$area       = IFilter::act(IReq::get('area'),'int');
@@ -92,6 +93,7 @@ class Member extends IController
 			'true_name'    => $truename,
 			'telephone'    => $telephone,
 			'mobile'       => $mobile,
+			'id_number'    => $id_number,
 			'area'         => $_POST['area'],
 			'contact_addr' => $contact_addr,
 			'qq'           => $qq,
