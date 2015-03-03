@@ -398,6 +398,127 @@ class Member extends IController
 	}
 
 	/**
+	 * @brief 级别添加
+	 */
+	function level_edit()
+	{
+		$gid = (int)IReq::get('gid');
+		//编辑会员等级信息 读取会员等级信息
+		if($gid)
+		{
+			$tb_user_level = new IModel('user_level');
+			$level_info = $tb_user_level->query("id=".$gid);
+
+			if(is_array($level_info) && ($info=$level_info[0]))
+			{
+				$this->data['level'] = array(
+					'level_id'	=>	$info['id'],
+					'level_name'=>	$info['level_name'],
+					'discount'	=>	$info['discount'],
+					'minexp'	=>	$info['minexp'],
+					'maxexp'	=>	$info['maxexp']
+				);
+			}
+			else
+			{
+				$this->redirect('level_list',false);
+				Util::showMessage("没有找到相关记录！");
+				return;
+			}
+		}
+		$this->setRenderData($this->data);
+		$this->redirect('level_edit');
+	}
+
+	/**
+	 * @brief 保存级别修改
+	 */
+	function level_save()
+	{
+		$level_id = IFilter::act(IReq::get('level_id'),'int');
+		$maxexp   = IFilter::act(IReq::get('maxexp'),'int');
+		$minexp   = IFilter::act(IReq::get('minexp'),'int');
+		$discount = IFilter::act(IReq::get('discount'),'float');
+		$level_name = IFilter::act(IReq::get('level_name'));
+
+		$level = array(
+			'maxexp' => $maxexp,
+			'minexp' => $minexp,
+			'discount' => $discount,
+			'level_name' => $level_name
+		);
+
+		if($discount > 100)
+		{
+			$errorMsg = '折扣率不能大于100';
+		}
+
+		if($maxexp <= $minexp)
+		{
+			$errorMsg = '最大经验值必须大于最小经验值';
+		}
+
+		if(isset($errorMsg) && $errorMsg)
+		{
+			$level['level_id'] = $level_id;
+			$data = array($level);
+
+			$this->setRenderData($data);
+			$this->redirect('level_edit',false);
+			Util::showMessage($errorMsg);
+			exit;
+		}
+		$tb_user_level = new IModel("user_level");
+		$tb_user_level->setData($level);
+
+		if($level_id)
+		{
+			$affected_rows = $tb_user_level->update("id=".$level_id);
+			if($affected_rows)
+			{
+				$this->redirect('level_list',false);
+				Util::showMessage('更新级别成功！');
+				return;
+			}
+			$this->redirect('level_list',false);
+		}
+		else
+		{
+			$gid = $tb_user_level->add();
+			$this->redirect('level_list',false);
+			if($gid)
+			{
+				Util::showMessage('添加级别成功！');
+			}
+			else
+			{
+				Util::showMessage('添加级别失败！');
+			}
+		}
+	}
+
+	/**
+	 * @brief 删除级别
+	 */
+	function level_del()
+	{
+		$level_ids = IReq::get('check');
+		$level_ids = is_array($level_ids) ? $level_ids : array($level_ids);
+		$level_ids = IFilter::act($level_ids,'int');
+		if($level_ids)
+		{
+			$ids = implode(',',$level_ids);
+			if($ids)
+			{
+				$tb_user_level = new IModel('user_level');
+				$where = "id in (".$ids.")";
+				$tb_user_level->del($where);
+			}
+		}
+		$this->redirect('level_list');
+	}
+
+	/**
 	 * @brief 身份添加
 	 */
 	function identity_edit()

@@ -78,9 +78,10 @@ class Menu
 		'会员'=>array(
 			'会员管理'=>array(
 	    		'/member/member_list' => '会员列表',
-	     		'/member/group_list' => '会员分组列表',
-				'/member/identity_list' => '会员身份列表',
-	     		'/member/withdraw_list'=>'会员提现管理'
+	     		'/member/group_list' => '分组管理',
+				'/member/level_list' => '级别管理',
+				'/member/identity_list' => '身份管理',
+	     		'/member/withdraw_list'=> '提现管理'
 			),
 //			'会员分类'=>array(
 //				'/member/category_list'	=>	'分类列表',

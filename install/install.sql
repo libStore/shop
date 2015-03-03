@@ -727,7 +727,8 @@ CREATE TABLE `{pre}member` (
   `msn` varchar(250) default NULL COMMENT 'MSN',
   `sex` tinyint(1) NOT NULL default '1' COMMENT '性别1男2女',
   `birthday` date default NULL COMMENT '生日',
-  `group_id` int(11) default NULL COMMENT '分组',
+  `group_id` int(11) default NULL COMMENT '群组',
+  `level_id` int(11) default NULL COMMENT '级别',
   `identity_id` int(11) default NULL COMMENT '身份',
   `exp` int(11) NOT NULL default '0' COMMENT '经验值',
   `point` int(11) NOT NULL default '0' COMMENT '积分',
@@ -741,6 +742,7 @@ CREATE TABLE `{pre}member` (
   `custom` varchar(255) default NULL COMMENT '用户习惯方式,配送和支付方式等信息',
   PRIMARY KEY  (`user_id`),
   index (`group_id`),
+  index (`level_id`),
   index (`identity_id`),
   index (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户信息表';
@@ -1243,24 +1245,6 @@ CREATE TABLE `{pre}ticket` (
   index (`start_time`,`end_time`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='代金券类型表';
 
-
--- --------------------------------------------------------
-
---
--- 表的结构 `{pre}user_group`
---
-
-DROP TABLE IF EXISTS `{pre}user_group`;
-CREATE TABLE `{pre}user_group` (
-  `id` int(11) unsigned NOT NULL auto_increment COMMENT '用户组ID',
-  `group_name` varchar(20) NOT NULL COMMENT '组名',
-  `discount` decimal(15,2) NOT NULL default '100' COMMENT '折扣率',
-  `minexp` int(11) default NULL COMMENT '最小经验',
-  `maxexp` int(11) default NULL COMMENT '最大经验',
-  `message_ids` varchar(255) default NULL COMMENT '消息ID',
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='用户组';
-
 -- --------------------------------------------------------
 
 --
@@ -1357,6 +1341,72 @@ CREATE TABLE `{pre}user` (
 
 -- --------------------------------------------------------
 
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}user_group`
+--
+
+DROP TABLE IF EXISTS `{pre}user_group`;
+CREATE TABLE `{pre}user_group` (
+  `id` int(11) unsigned NOT NULL auto_increment COMMENT '用户组ID',
+  `group_name` varchar(20) NOT NULL COMMENT '组名',
+  `discount` decimal(15,2) NOT NULL default '100' COMMENT '折扣率',
+  `minexp` int(11) default NULL COMMENT '最小经验',
+  `maxexp` int(11) default NULL COMMENT '最大经验',
+  `message_ids` varchar(255) default NULL COMMENT '消息ID',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='用户组';
+
+INSERT INTO `{pre}user_group` (`id`,`group_name`)VALUES(0,'普通');
+INSERT INTO `{pre}user_group` (`id`,`group_name`)VALUES(1,'铜牌');
+INSERT INTO `{pre}user_group` (`id`,`group_name`)VALUES(2,'银牌');
+INSERT INTO `{pre}user_group` (`id`,`group_name`)VALUES(3,'金牌');
+INSERT INTO `{pre}user_group` (`id`,`group_name`)VALUES(4,'钻石');
+
+--
+-- 表的结构 `{pre}user_level`
+--
+
+DROP TABLE IF EXISTS `{pre}user_level`;
+CREATE TABLE `{pre}user_level` (
+  `id` int(11) unsigned NOT NULL auto_increment COMMENT '级别ID',
+  `level_name` varchar(20) NOT NULL COMMENT '级别名称',
+  `discount` decimal(15,2) NOT NULL default '100' COMMENT '折扣率',
+  `minexp` int(11) default NULL COMMENT '最小经验',
+  `maxexp` int(11) default NULL COMMENT '最大经验',
+  `message_ids` varchar(255) default NULL COMMENT '消息ID',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='用户级别';
+
+INSERT INTO `{pre}user_level` (`id`,`level_name`)VALUES(0,'初级');
+INSERT INTO `{pre}user_level` (`id`,`level_name`)VALUES(1,'中级');
+INSERT INTO `{pre}user_level` (`id`,`level_name`)VALUES(2,'高级');
+INSERT INTO `{pre}user_level` (`id`,`level_name`)VALUES(3,'特级');
+INSERT INTO `{pre}user_level` (`id`,`level_name`)VALUES(4,'超级');
+INSERT INTO `{pre}user_level` (`id`,`level_name`)VALUES(5,'顶级');
+
+--
+-- 表的结构 `{pre}user_identity`
+--
+
+DROP TABLE IF EXISTS `{pre}user_identity`;
+CREATE TABLE `{pre}user_identity` (
+  `id` int(11) unsigned NOT NULL auto_increment COMMENT '身份ID',
+  `identity_name` varchar(20) NOT NULL COMMENT '身份名称',
+  `discount` decimal(15,2) NOT NULL default '100' COMMENT '折扣率',
+  `minexp` int(11) default NULL COMMENT '最小经验',
+  `maxexp` int(11) default NULL COMMENT '最大经验',
+  `message_ids` varchar(255) default NULL COMMENT '消息ID',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='用户身份';
+
+INSERT INTO `{pre}user_identity` (`id`,`identity_name`)VALUES(0,'创始人');
+INSERT INTO `{pre}user_identity` (`id`,`identity_name`)VALUES(1,'投资人');
+INSERT INTO `{pre}user_identity` (`id`,`identity_name`)VALUES(2,'领投人');
+INSERT INTO `{pre}user_identity` (`id`,`identity_name`)VALUES(3,'推荐人');
+INSERT INTO `{pre}user_identity` (`id`,`identity_name`)VALUES(4,'经纪人');
+
 --
 -- 表的结构 `{pre}admin`
 --
@@ -1398,7 +1448,7 @@ CREATE TABLE `{pre}admin_role` (
 DROP TABLE IF EXISTS `{pre}seller`;
 CREATE TABLE `{pre}seller` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `seller_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0：商品商户 1：众筹商户',
+  `seller_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0：电商 1：众筹',
   `seller_name` varchar(80) NOT NULL COMMENT '商户登录用户名',
   `password` char(32) NOT NULL COMMENT '商户密码',
   `create_time` datetime DEFAULT NULL COMMENT '加入时间',
