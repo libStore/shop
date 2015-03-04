@@ -244,7 +244,7 @@ class Crowd extends IController
 		$crowd_class = new crowd_class();
 
 		//获取众筹分类列表
-		$tb_category = new IModel('category');
+		$tb_category = new IModel('crowd_category');
 		$this->category = $crowd_class->sortdata($tb_category->query(false,'*','sort','asc'),0,'--');
 
 		//获取所有众筹扩展相关数据
@@ -453,7 +453,7 @@ class Crowd extends IController
 		//编辑众筹分类 读取众筹分类信息
 		if($category_id)
 		{
-			$obj_category = new IModel('category');
+			$obj_category = new IModel('crowd_category');
 			$category_info = $obj_category->getObj('id='.$category_id);
 			if($category_info)
 			{
@@ -469,7 +469,7 @@ class Crowd extends IController
 		//加载分类
 		if(!isset($obj_category))
 		{
-			$obj_category = new IModel('category');
+			$obj_category = new IModel('crowd_category');
 		}
 
 		$crowd = new crowd_class();
@@ -499,7 +499,7 @@ class Crowd extends IController
 			exit;
 		}
 
-		$tb_category = new IModel('category');
+		$tb_category = new IModel('crowd_category');
 		$category_info = array(
 			'name'      => $name,
 			'parent_id' => $parent_id,
@@ -531,7 +531,7 @@ class Crowd extends IController
 		$category_id = IFilter::act(IReq::get('cid'),'int');
 		if($category_id)
 		{
-			$tb_category = new IModel('category');
+			$tb_category = new IModel('crowd_category');
 			$catRow      = $tb_category->getObj('parent_id = '.$category_id);
 
 			//要删除的分类下还有子节点
@@ -577,7 +577,7 @@ class Crowd extends IController
 	 */
 	function category_list()
 	{
-		$tb_category = new IModel('category');
+		$tb_category = new IModel('crowd_category');
 		$crowd = new crowd_class();
 		$this->data['category'] = $crowd->sortdata($tb_category->query(false,'*','sort','asc'));
 		$this->setRenderData($this->data);
@@ -808,7 +808,7 @@ class Crowd extends IController
 		$flag = 0;
 		if($category_id)
 		{
-			$tb_category = new IModel('category');
+			$tb_category = new IModel('crowd_category');
 			$category_info = $tb_category->getObj('id='.$category_id);
 			if(count($category_info)>0)
 			{

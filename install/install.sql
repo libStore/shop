@@ -584,11 +584,13 @@ DROP TABLE IF EXISTS `{pre}group_price`;
 CREATE TABLE `{pre}group_price` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `goods_id` int(11) unsigned NOT NULL COMMENT '产品ID',
+  `crowd_id` int(11) unsigned NOT NULL COMMENT '众筹ID',
   `product_id` int(11) unsigned default NULL COMMENT '货品ID',
   `group_id` int(11) unsigned NOT NULL COMMENT '用户组ID',
   `price` decimal(15,2) NOT NULL default '0.00' COMMENT '价格',
   PRIMARY KEY  (`id`),
   index (`goods_id`),
+  index (`crowd_id`),
   index (`group_id`),
   index (`product_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='记录某件商品对于某组会员的价格关系表，优先权大于组设定的折扣率';
@@ -925,6 +927,7 @@ DROP TABLE IF EXISTS `{pre}products`;
 CREATE TABLE `{pre}products` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `goods_id` int(11) unsigned NOT NULL COMMENT '货品ID',
+  `crowd_id` int(11) unsigned NOT NULL COMMENT '项目ID', # TODO 删除
   `products_no` varchar(20) NOT NULL COMMENT '货品的货号(以商品的货号加横线加数字组成)',
   `spec_array` text COMMENT 'json规格数据',
   `store_nums` int(11) NOT NULL default '0' COMMENT '库存',
@@ -933,7 +936,8 @@ CREATE TABLE `{pre}products` (
   `cost_price` decimal(15,2) NOT NULL default '0.00' COMMENT '成本价格',
   `weight` decimal(15,2) NOT NULL default '0.00' COMMENT '重量',
   PRIMARY KEY  (`id`),
-  index (`goods_id`)
+  index (`goods_id`),
+  index (`crowd_id`) # TODO 删除
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='货品表';
 
 -- --------------------------------------------------------
@@ -1477,6 +1481,160 @@ CREATE TABLE `{pre}seller` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='商户表';
 
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}crowd_show`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_show`;
+CREATE TABLE `{pre}crowd_show` (
+  `id` int(11) unsigned NOT NULL auto_increment COMMENT '路演ID',
+  `video` varchar(255) default NULL COMMENT '原始视频路径',
+  `content` text COMMENT '图文详情',
+  `seller_id` int(11) default '0' COMMENT '所属商户',
+  `user_id` int(11) default '0' COMMENT '用户ID',
+  `is_del` tinyint(1) NOT NULL default '0' COMMENT '删除状态 0正常 1已删除 2上线 3申请上线',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime NOT NULL COMMENT '更新时间',
+  `up_time` datetime default NULL COMMENT '上线时间',
+  `down_time` datetime default NULL COMMENT '下线时间',
+  PRIMARY KEY  (`id`),
+  index (`seller_id`),
+  index (`sort`),
+  index (`is_del`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='项目路演表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}crowd_video`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_video`;
+CREATE TABLE `{pre}crowd_video` (
+  `id` char(32) NOT NULL COMMENT '视频的md5值',
+  `img` varchar(255) default NULL COMMENT '原始视频路径',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目视频表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}crowd_photo`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_photo`;
+CREATE TABLE `{pre}crowd_photo` (
+  `id` char(32) NOT NULL COMMENT '图片的md5值',
+  `img` varchar(255) default NULL COMMENT '原始图片路径',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='众筹图片表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}crowd_photo_relation`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_photo_relation`;
+CREATE TABLE `{pre}crowd_photo_relation` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `crowd_id` int(11) unsigned NOT NULL COMMENT '众筹ID',
+  `photo_id` char(32) NOT NULL default '' COMMENT '图片ID,图片的md5值',
+  PRIMARY KEY  (`id`),
+  index (`crowd_id`),
+  index (`photo_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='相册众筹关系表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}crowd_rewards`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_reward`;
+CREATE TABLE `{pre}crowd_reward` (
+  `id` int(11) unsigned NOT NULL auto_increment COMMENT '奖励ID',
+  `amount` decimal(15,2) default NULL COMMENT '投资金额',
+  `content` varchar(255) default NULL COMMENT '奖励内容',
+  `crowd_id` int(11) NOT NULL default '0' COMMENT '众筹项目',
+  `seller_id` int(11) NOT NULL default '0' COMMENT '所属商户',
+  `sort` smallint(5) NOT NULL default '99' COMMENT '排序',
+  `is_del` tinyint(1) NOT NULL default '0' COMMENT '删除状态 0正常 1已删除 2上线 3申请上线',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime NOT NULL COMMENT '更新时间',
+  PRIMARY KEY  (`id`),
+  index (`seller_id`),
+  index (`sort`),
+  index (`is_del`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='众筹奖励表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}category`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_category`;
+CREATE TABLE `{pre}crowd_category` (
+  `id` int(11) unsigned NOT NULL auto_increment COMMENT '分类ID',
+  `name` varchar(50) NOT NULL COMMENT '分类名称',
+  `parent_id` int(11) unsigned NOT NULL COMMENT '父分类ID',
+  `sort` smallint(5) NOT NULL default '0' COMMENT '排序',
+  `visibility` tinyint(1) NOT NULL default '1' COMMENT '首页是否显示 1显示 0 不显示',
+  `keywords` varchar(255) default NULL COMMENT 'SEO关键词和检索关键词',
+  `descript` varchar(255) default NULL COMMENT 'SEO描述',
+  `title` varchar(255) default NULL COMMENT 'SEO标题title',
+  PRIMARY KEY  (`id`),
+  index (`parent_id`,`visibility`),
+  index (`sort`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='众筹分类表';
+
+INSERT INTO `{pre}crowd_category` (`id`,`name`,`parent_id`,`sort`,`visibility`) VALUES (1,'店铺',0,0,1);
+INSERT INTO `{pre}crowd_category` (`id`,`name`,`parent_id`,`sort`,`visibility`) VALUES (2,'科技',0,0,1);
+INSERT INTO `{pre}crowd_category` (`id`,`name`,`parent_id`,`sort`,`visibility`) VALUES (3,'农业',0,0,1);
+INSERT INTO `{pre}crowd_category` (`id`,`name`,`parent_id`,`sort`,`visibility`) VALUES (4,'出版',0,0,1);
+INSERT INTO `{pre}crowd_category` (`id`,`name`,`parent_id`,`sort`,`visibility`) VALUES (5,'艺术',0,0,1);
+INSERT INTO `{pre}crowd_category` (`id`,`name`,`parent_id`,`sort`,`visibility`) VALUES (6,'娱乐',0,0,1);
+INSERT INTO `{pre}crowd_category` (`id`,`name`,`parent_id`,`sort`,`visibility`) VALUES (7,'公益',0,0,1);
+INSERT INTO `{pre}crowd_category` (`id`,`name`,`parent_id`,`sort`,`visibility`) VALUES (8,'其他',0,0,1);
+
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}commend_crowd`
+--
+
+DROP TABLE IF EXISTS `{pre}commend_crowd`;
+CREATE TABLE `{pre}commend_crowd` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `commend_id` int(11) unsigned NOT NULL COMMENT '推荐类型ID 1:最新商品 2:特价商品 3:热卖排行 4:推荐商品',
+  `crowd_id` int(11) unsigned NOT NULL COMMENT '众筹项目ID',
+  PRIMARY KEY  (`id`),
+  index (`crowd_id`),
+  index (`commend_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='推荐类众筹项目';
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}crowd_attribute`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_attribute`;
+CREATE TABLE `{pre}crowd_attribute` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `crowd_id` int(11) unsigned NOT NULL COMMENT '众筹ID',
+  `attribute_id` int(11) unsigned default NULL COMMENT '属性ID',
+  `attribute_value` varchar(255) default NULL COMMENT '属性值',
+  `model_id` int(11) unsigned default NULL COMMENT '模型ID',
+  `order` smallint(5) NOT NULL default '99' COMMENT '排序',
+  PRIMARY KEY  (`id`),
+  index (`crowd_id`),
+  index (`attribute_id`,`attribute_value`),
+  index (`order`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='众筹属性值表';
 
 -- --------------------------------------------------------
 
@@ -1487,41 +1645,137 @@ CREATE TABLE `{pre}seller` (
 DROP TABLE IF EXISTS `{pre}crowd`;
 CREATE TABLE `{pre}crowd` (
   `id` int(11) unsigned NOT NULL auto_increment COMMENT '众筹ID',
-  `name` varchar(50) NOT NULL COMMENT '众筹名称',
+  `category_id` varchar(20) NOT NULL COMMENT '分类ID',
+  `uuid` varchar(20) NOT NULL COMMENT '编号',
+  `name` varchar(50) NOT NULL COMMENT '名称',
+  `profile` varchar(255) default NULL COMMENT '简述',
+  `cover` varchar(255) default NULL COMMENT '封面',
+  `content` text COMMENT '图文详情',
+
+  `amount_total` decimal(15,2) default NULL COMMENT '总资金金额',
+  `amount_self` decimal(15,2) default NULL COMMENT '自有资金金额',
+  `amount_loan` decimal(15,2) default NULL COMMENT '借款资金金额',
+  `amount_mini` decimal(15,2) default NULL COMMENT '最低投资金额',
+  `expire_days` decimal(15,2) default NULL COMMENT '线上融资周期',
+
+  `is_del` tinyint(1) NOT NULL default '0' COMMENT '删除状态 0正常 1已删除 2上线 3申请上线',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime NOT NULL COMMENT '更新时间',
+  `up_time` datetime default NULL COMMENT '上架时间',
+  `down_time` datetime default NULL COMMENT '下架时间',
+
+  `user_id` int(11) default '0' COMMENT '操作用户ID',
+  `seller_id` int(11) default '0' COMMENT '所属商户',
+  `uid_founder` int(11) unsigned NOT NULL COMMENT '发起人ID',
+  `uid_leader` int(11) unsigned NOT NULL COMMENT '领投人ID',
+  `uid_recommender` int(11) unsigned NOT NULL COMMENT '推荐人ID',
+  `uid_agent` int(11) unsigned NOT NULL COMMENT '经纪人ID',
+  `publish` tinyint(1) NOT NULL default '0' COMMENT '发布状态 0未发布 1预热中  2融资中 3已完成',
+  `show_id` int(11) default '0' COMMENT '相关路演',
+  `photo_id` int(11) default '0' COMMENT '相关相册',
+  `video_id` int(11) default '0' COMMENT '相关视频',
+
+  `icon` varchar(255) default NULL COMMENT '图标',
+  `img_bg` varchar(255) default NULL COMMENT '背景图',
+  `img_ad` varchar(255) default NULL COMMENT '广告图',
+
+  `store_nums` int(11) NOT NULL default '0' COMMENT '库存',
+
+  `keywords` varchar(255) default NULL COMMENT 'SEO关键词',
+  `description` varchar(255) default NULL COMMENT 'SEO描述',
+  `search_words` varchar(50) default NULL COMMENT '搜索词库,逗号分隔',
+
+  `visit` int(11) NOT NULL default '0' COMMENT '浏览数',
+  `like` int(11) NOT NULL default '0' COMMENT '点赞数',
+  `follow` int(11) NOT NULL default '0' COMMENT '关注数',
+  `talk` int(11) NOT NULL default '0' COMMENT '约谈数',
+  `share` int(11) NOT NULL default '0' COMMENT '分享数',
+  `favorite` int(11) NOT NULL default '0' COMMENT '收藏数',
+  `comments` int(11) NOT NULL default '0' COMMENT '评论数',
+  `sale` int(11) NOT NULL default '0' COMMENT '销量',
+  `grade` int(11) NOT NULL default '0' COMMENT '评分总数',
+
+  `sort` smallint(5) NOT NULL default '99' COMMENT '排序',
+  `point` int(11) NOT NULL default '0' COMMENT '积分',
+  `exp` int(11) NOT NULL default '0' COMMENT '经验值',
+
+  `spec_array` text COMMENT '序列化存储规格,key值为规则ID，value为此众筹项目具有的规格值',
+
+#TODO 以下字段准备废弃
+  `img` varchar(255) default NULL COMMENT '原图',
+  `ad_img` varchar(255) default NULL COMMENT '宣传图',
   `crowd_no` varchar(20) NOT NULL COMMENT '众筹的编号',
+  `weight` decimal(15,2) NOT NULL default '0.00' COMMENT '重量',
+  `unit` varchar(10) default NULL COMMENT '计量单位',
   `model_id` int(11) unsigned NOT NULL COMMENT '模型ID',
   `sell_price` decimal(15,2) NOT NULL COMMENT '销售价格',
   `market_price` decimal(15,2) default NULL COMMENT '市场价格',
   `cost_price` decimal(15,2) default NULL COMMENT '成本价格',
-  `up_time` datetime default NULL COMMENT '上架时间',
-  `down_time` datetime default NULL COMMENT '下架时间',
-  `create_time` datetime NOT NULL COMMENT '创建时间',
-  `store_nums` int(11) NOT NULL default '0' COMMENT '库存',
-  `img` varchar(255) default NULL COMMENT '原图',
-  `ad_img` varchar(255) default NULL COMMENT '宣传图',
-  `is_del` tinyint(1) NOT NULL default '0' COMMENT '删除 0正常 1已删除 2下架 3申请上架',
-  `content` text COMMENT '众筹描述',
-  `keywords` varchar(255) default NULL COMMENT 'SEO关键词',
-  `description` varchar(255) default NULL COMMENT 'SEO描述',
-  `search_words` varchar(50) default NULL COMMENT '搜索词库,逗号分隔',
-  `weight` decimal(15,2) NOT NULL default '0.00' COMMENT '重量',
-  `point` int(11) NOT NULL default '0' COMMENT '积分',
-  `unit` varchar(10) default NULL COMMENT '计量单位',
-  `visit` int(11) NOT NULL default '0' COMMENT '浏览次数',
-  `favorite` int(11) NOT NULL default '0' COMMENT '收藏次数',
-  `sort` smallint(5) NOT NULL default '99' COMMENT '排序',
-  `spec_array` text COMMENT '序列化存储规格,key值为规则ID，value为此众筹具有的规格值',
-  `exp` int(11) NOT NULL default '0' COMMENT '经验值',
-  `comments` int(11) NOT NULL default '0' COMMENT '评论次数',
-  `sale` int(11) NOT NULL default '0' COMMENT '销量',
-  `grade` int(11) NOT NULL default '0' COMMENT '评分总数',
-  `seller_id` int(11) default '0' COMMENT '卖家ID',
+
   PRIMARY KEY  (`id`),
   index (`seller_id`),
   index (`sort`),
   index (`is_del`),
-  index (`model_id`)
+  index (`publish`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='众筹信息表';
+
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}crowd_news`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_news`;
+CREATE TABLE `{pre}crowd_news` (
+  `id` int(11) unsigned NOT NULL auto_increment COMMENT '新闻动态ID',
+  `user_id` int(11) unsigned NOT NULL COMMENT '用户ID',
+  `content` text COMMENT '新闻动态详情',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime NOT NULL COMMENT '更新时间',
+  `is_del` tinyint(1) NOT NULL default '0' COMMENT '删除状态 0正常 1已删除',
+  PRIMARY KEY  (`id`),
+  index (`user_id`),
+  index (`is_del`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='众筹新闻动态表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}crowd_invest`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_invest`;
+CREATE TABLE `{pre}crowd_invest` (
+  `id` int(11) unsigned NOT NULL auto_increment COMMENT '投资ID',
+  `amount` decimal(15,2) default NULL COMMENT '投资金额',
+  `user_id` int(11) unsigned NOT NULL COMMENT '用户ID',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime NOT NULL COMMENT '更新时间',
+  `is_del` tinyint(1) NOT NULL default '0' COMMENT '删除状态 0正常 1已删除',
+  PRIMARY KEY  (`id`),
+  index (`user_id`),
+  index (`is_del`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='众筹投资表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}crowd_dividend`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_dividend`;
+CREATE TABLE `{pre}crowd_dividend` (
+  `id` int(11) unsigned NOT NULL auto_increment COMMENT '分红ID',
+  `amount` decimal(15,2) default NULL COMMENT '投资金额',
+  `user_id` int(11) unsigned NOT NULL COMMENT '用户ID',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `update_time` datetime NOT NULL COMMENT '更新时间',
+  `is_del` tinyint(1) NOT NULL default '0' COMMENT '删除状态 0正常 1已删除',
+  PRIMARY KEY  (`id`),
+  index (`user_id`),
+  index (`is_del`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='众筹分红表';
 
 -- --------------------------------------------------------
 
@@ -1638,7 +1892,7 @@ CREATE TABLE `{pre}order` (
 DROP TABLE IF EXISTS `{pre}category`;
 CREATE TABLE `{pre}category` (
   `id` int(11) unsigned NOT NULL auto_increment COMMENT '分类ID',
-  `type` smallint(5) NOT NULL default '0' COMMENT '类型：0-商品 1-众筹 2-商户',
+  `type` smallint(5) NOT NULL default '0' COMMENT '类型：0-商品 1-众筹 2-商户', # TODO 删除
   `name` varchar(50) NOT NULL COMMENT '分类名称',
   `parent_id` int(11) unsigned NOT NULL COMMENT '父分类ID',
   `sort` smallint(5) NOT NULL default '0' COMMENT '排序',
@@ -1958,6 +2212,7 @@ ALTER TABLE `{pre}quick_naviga` ADD foreign key(admin_id) references {pre}admin(
 ALTER TABLE `{pre}oauth_user` ADD foreign key(user_id) references {pre}user(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}online_recharge` ADD foreign key(user_id) references {pre}user(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}products` ADD foreign key(goods_id) references {pre}goods(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `{pre}products` ADD foreign key(crowd_id) references {pre}crowd(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}point_log` ADD foreign key(user_id) references {pre}user(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}order_log` ADD foreign key(order_id) references {pre}order(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}order_goods` ADD foreign key(order_id) references {pre}order(id) ON UPDATE CASCADE ON DELETE CASCADE;
@@ -1966,10 +2221,12 @@ ALTER TABLE `{pre}notify_registry` ADD  foreign key(goods_id) references {pre}go
 ALTER TABLE `{pre}member` ADD foreign key(user_id) references {pre}user(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}help` ADD foreign key(cat_id) references {pre}help_category(id);
 ALTER TABLE `{pre}group_price` ADD foreign key(goods_id) references {pre}goods(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `{pre}group_price` ADD foreign key(crowd_id) references {pre}crowd(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}group_price` ADD foreign key(group_id) references {pre}user_group(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}goods_photo_relation` ADD foreign key(goods_id) references {pre}goods(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}goods_car` ADD foreign key(user_id) references {pre}user(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}goods_attribute` ADD foreign key(goods_id) references {pre}goods(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `{pre}crowd_attribute` ADD foreign key(crowd_id) references {pre}crowd(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}favorite` ADD FOREIGN KEY (user_id) REFERENCES {pre}user(id) on delete cascade on update cascade;
 ALTER TABLE `{pre}favorite` ADD FOREIGN KEY (rid) REFERENCES {pre}goods(id) on delete cascade on update cascade;
 ALTER TABLE `{pre}discussion` ADD FOREIGN KEY (goods_id) REFERENCES {pre}goods(id) on delete cascade on update cascade;

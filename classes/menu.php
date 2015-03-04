@@ -46,11 +46,11 @@ class Menu
 		),
 
 		'众筹'=>array(
-			'项目管理'=>array(
+			'众筹管理'=>array(
 				'/crowd/crowd_list' => '项目列表',
 				'/crowd/crowd_edit' => '项目添加'
 			),
-			'项目分类'=>array(
+			'众筹分类'=>array(
 				'/crowd/category_list'	=>	'分类列表',
 				'/crowd/category_edit'	=>	'添加分类'
 			),
@@ -60,33 +60,21 @@ class Menu
 			)
 		),
 
-		'商户'=>array(
-			'商户管理' => array(
-				'/member/seller_list' => '商户列表',
-				'/member/seller_edit' => '添加商户',
-			),
-			'商户分类'=>array(
-				'/member/category_list'	=>	'分类列表',
-				'/member/category_edit'	=>	'添加分类'
-			),
-			'搜索'=>array(
-				'/tools/keyword_list' => '关键词列表',
-				'/tools/search_list' => '搜索统计'
-			)
-		),
-
 		'会员'=>array(
-			'会员管理'=>array(
-	    		'/member/member_list' => '会员列表',
+			'用户管理'=>array(
+	    		'/member/member_list' => '用户列表',
+				'/member/member_edit' => '添加用户',
 	     		'/member/group_list' => '分组管理',
 				'/member/level_list' => '级别管理',
 				'/member/identity_list' => '身份管理',
 	     		'/member/withdraw_list'=> '提现管理'
 			),
-//			'会员分类'=>array(
-//				'/member/category_list'	=>	'分类列表',
-//				'/member/category_edit'	=>	'添加分类'
-//			),
+
+			'商户管理' => array(
+				'/member/seller_list' => '商户列表',
+				'/member/seller_edit' => '添加商户',
+			),
+
 			'信息处理' => array(
 				'/comment/suggestion_list'  => '建议管理',
 				'/comment/refer_list'		=> '咨询管理',

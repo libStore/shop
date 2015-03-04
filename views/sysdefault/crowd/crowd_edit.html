@@ -7,9 +7,11 @@
 <div class="headbar clearfix">
 	<div class="position"><span>众筹</span><span>></span><span>项目管理</span><span>></span><span>项目编辑</span></div>
 	<ul class="tab" name="menu1">
-		<li id="li_1" class="selected"><a href="javascript:void(0)" hidefocus="true" onclick="select_tab('1')">项目信息</a></li>
-		<li id="li_2"><a href="javascript:void(0)" hidefocus="true" onclick="select_tab('2')">描述</a></li>
-		<li id="li_3"><a href="javascript:void(0)" hidefocus="true" onclick="select_tab('3')">营销选项</a></li>
+		<li id="li_1" class="selected"><a href="javascript:void(0)" hidefocus="true" onclick="select_tab('1')">基本信息</a></li>
+		<li id="li_2"><a href="javascript:void(0)" hidefocus="true" onclick="select_tab('2')">扩展信息</a></li>
+		<li id="li_3"><a href="javascript:void(0)" hidefocus="true" onclick="select_tab('3')">路演信息</a></li>
+		<li id="li_4"><a href="javascript:void(0)" hidefocus="true" onclick="select_tab('4')">奖励设置</a></li>
+		<li id="li_5"><a href="javascript:void(0)" hidefocus="true" onclick="select_tab('5')">营销选项 </a></li>
 	</ul>
 </div>
 
@@ -26,16 +28,28 @@
 					<col width="150px" />
 					<col />
 					<tr>
-						<th>众筹名称：</th>
+						<th>项目编号：</th>
 						<td>
-							<input class="normal" name="name" type="text" value="" pattern="required" alt="众筹名称不能为空" onblur="wordsPart()" /><label>*</label>
+							<input class="normal" name="uuid" type="text" readonly="true" disabled/><label>系统默认生成，无需编辑</label>
+						</td>
+					</tr>
+					<tr>
+						<th>项目标题：</th>
+						<td>
+							<input class="normal" name="name" type="text" value="" pattern="required" alt="项目标题" onblur="wordsPart()" /><label>*</label>
 						</td>
 					</tr>
 					<tr>
 						<th>关键词：</th>
 						<td>
-							<input type='text' class='middle' name='search_words' value='' />
+							<input type='text' class='normal' name='search_words' value='' />
 							<label>每个关键词最长为15个字符，必须以","(逗号)分隔符</label>
+						</td>
+					</tr>
+					<tr>
+						<th>项目简介：</th>
+						<td>
+							<textarea class="normal" name="profile" type="text" value="" pattern="required" alt="项目简介不能为空"></textarea><label>*</label>
 						</td>
 					</tr>
 					<tr>
@@ -51,7 +65,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th>所属分类：</th>
+						<th>项目分类：</th>
 						<td>
 							{if:isset($this->category) && $this->category}
 							<ul class="select">
@@ -60,8 +74,61 @@
 								{/foreach}
 							</ul>
 							{else:}
-							系统暂无众筹分类，<a href='{url:/crowd/category_edit}' class='orange'>请点击添加分类</a>
+							系统暂无众筹项目分类，<a href='{url:/crowd/category_edit}' class='orange'>请点击添加</a>
 							{/if}
+						</td>
+					</tr>
+					<tr>
+						<th>基础数据：</th>
+						<td>
+							<div class="con">
+								<table class="border_table">
+									<thead>
+									<tr>
+										<th>购买成功增加积分</th><th>购买成功增加经验值</th><th>排序</th>
+									</tr>
+									</thead>
+									<tbody>
+									<tr>
+										<td><input class="small" name="point" type="text" pattern="int" value="0"/></td>
+										<td><input class="small" name="exp" type="text" pattern="int" value="0"/></td>
+										<td><input class="small" name="sort" type="text" pattern="int" value="99"/></td>
+									</tr>
+									</tbody>
+								</table>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>财务数据：</th>
+						<td>
+							<div class="con">
+								<table class="border_table">
+									<thead>
+										<tr>
+											<th>项目总金额（元）</th><th>项目方注资金额（元）</th><th>线上融资总金额（元）</th><th>最低单笔投资金额（元）</th><th>线上融资周期（天）</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td><input class="small" name="amount_total" type="text" pattern="int" value="2000000"/></td>
+											<td><input class="small" name="amount_self" type="text" pattern="int" value="400000"/></td>
+											<td><input class="small" name="amount_loan" type="text" pattern="int" value="1600000"/></td>
+											<td><input class="small" name="amount_mini" type="text" pattern="int" value="10000"/></td>
+											<td><input class="small" name="expire_days" type="text" pattern="int" value="90"/></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>推荐类型：</th>
+						<td>
+							<label class="attr"><input name="_crowd_commend[]" type="checkbox" value="1" />最新发布</label>
+							<label class="attr"><input name="_crowd_commend[]" type="checkbox" value="2" />平台优选</label>
+							<label class="attr"><input name="_crowd_commend[]" type="checkbox" value="3" />热门项目</label>
+							<label class="attr"><input name="_crowd_commend[]" type="checkbox" value="4" />专家推荐</label>
 						</td>
 					</tr>
 					<tr>
@@ -71,173 +138,33 @@
 							<label class='attr'><input type="radio" name="is_del" value="2"> 否</label>
 						</td>
 					</tr>
-					<tr>
-						<th>附属数据：</th>
-						<td>
-							<div class="con">
-								<table class="border_table">
-									<thead>
-										<tr>
-											<th>购买成功增加积分</th><th>排序</th><th>计量单位显示</th><th>购买成功增加经验值</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr>
-											<td><input class="small" name="point" type="text" pattern="int" value="0"/></td>
-											<td><input class="small" name="sort" type="text" pattern="int" value="99"/></td>
-											<td><input class="small" name="unit" type="text" value="千克"/></td>
-											<td><input class="small" name="exp" type="text" pattern="int" value="0"/></td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<th>基本数据：</th>
-						<td>
-							<div class="con">
-								<table class="border_table">
-									<thead id="crowdBaseHead"></thead>
+				</table>
+			</div>
 
-									<!--众筹标题模板-->
-									<script id="crowdHeadTemplate" type='text/html'>
-									<tr>
-										<th>众筹货号</th>
-										<%var isProduct = false;%>
-										<%for(var item in templateData){%>
-										<%isProduct = true;%>
-										<th><%=templateData[item]['name']%></th>
-										<%}%>
-										<th>库存</th>
-										<th>市场价格</th>
-										<th>销售价格</th>
-										<th>成本价格</th>
-										<th>重量(克)</th>
-										<%if(isProduct == true){%>
-										<th>操作</th>
-										<%}%>
-									</tr>
-									</script>
-
-									<tbody id="crowdBaseBody"></tbody>
-
-									<!--众筹内容模板-->
-									<script id="crowdRowTemplate" type="text/html">
-									<%var i=0;%>
-									<%for(var item in templateData){%>
-									<%item = templateData[item]%>
-									<tr class='td_c'>
-										<td><input class="small" name="_crowd_no[<%=i%>]" pattern="required" type="text" value="<%=item['crowd_no'] ? item['crowd_no'] : item['products_no']%>" /></td>
-										<%var isProduct = false;%>
-										<%var specArrayList = parseJSON(item['spec_array'])%>
-										<%for(var result in specArrayList){%>
-										<%result = specArrayList[result]%>
-										<input type='hidden' name="_spec_array[<%=i%>][]" value='{"id":"<%=result.id%>","type":"<%=result.type%>","value":"<%=result.value%>","name":"<%=result.name%>"}' />
-										<%isProduct = true;%>
-										<td>
-											<%if(result['type'] == 1){%>
-												<%=result['value']%>
-											<%}else{%>
-												<img class="img_border" width="30px" height="30px" src="{webroot:<%=result['value']%>}">
-											<%}%>
-										</td>
-										<%}%>
-										<td><input class="tiny" name="_store_nums[<%=i%>]" type="text" pattern="int" value="<%=item['store_nums']?item['store_nums']:100%>" /></td>
-										<td><input class="tiny" name="_market_price[<%=i%>]" type="text" pattern="float" value="<%=item['market_price']%>" /></td>
-										<td>
-											<input type='hidden' name="_groupPrice[<%=i%>]" value="<%=item['groupPrice']%>" />
-											<input class="tiny" name="_sell_price[<%=i%>]" type="text" pattern="float" value="<%=item['sell_price']%>" />
-											<button class="btn" type="button" onclick="memberPrice(this);"><span class="add <%if(item['groupPrice']){%>orange<%}%>">会员组价格</span></button>
-										</td>
-										<td><input class="tiny" name="_cost_price[<%=i%>]" type="text" pattern="float" empty value="<%=item['cost_price']%>" /></td>
-										<td><input class="tiny" name="_weight[<%=i%>]" type="text" pattern="float" empty value="<%=item['weight']%>" /></td>
-										<%if(isProduct == true){%>
-										<td><a href="javascript:void(0)" onclick="delProduct(this);"><img class="operator" src="{skin:images/admin/icon_del.gif}" alt="删除" /></a></td>
-										<%}%>
-									</tr>
-									<%i++;%>
-									<%}%>
-									</script>
-								</table>
-							</div>
-						</td>
-					</tr>
+			<div id="table_box_2" cellpadding="0" cellspacing="0" style="display:none">
+				<table class="form_table">
+					<col width="150px" />
+					<col />
 					<tr>
-						<th>规格：</th>
-						<td><button class="btn" type="button" onclick="selSpec()"><span class="add">添加规格</span></button></td>
-					</tr>
-					<tr>
-						<th>众筹模型：</th>
+						<th>项目封面：</th>
 						<td>
-							<select class="auto" name="model_id" onchange="create_attr(this.value)">
-								<option value="0">通用类型 </option>
-								{query:name=model}
-								<option value="{$item['id']}">{$item['name']}</option>
-								{/query}
-							</select>
-						</td>
-					</tr>
-					<tr id="properties" style="display:none">
-						<th>扩展属性：</th>
-						<td>
-							<table class="border_table1" id="propert_table">
-							<script type='text/html' id='propertiesTemplate'>
-							<%for(var item in templateData){%>
-							<%item = templateData[item]%>
-							<%var valueItems = item['value'].split(',');%>
-							<tr>
-								<th><%=item["name"]%></th>
-								<td>
-									<%if(item['type'] == 1){%>
-										<%for(var tempVal in valueItems){%>
-										<%tempVal = valueItems[tempVal]%>
-											<label class="attr"><input type="radio" name="attr_id_<%=item['id']%>" value="<%=tempVal%>" /><%=tempVal%></label>
-										<%}%>
-									<%}else if(item['type'] == 2){%>
-										<%for(var tempVal in valueItems){%>
-										<%tempVal = valueItems[tempVal]%>
-											<label class="attr"><input type="checkbox" name="attr_id_<%=item['id']%>[]" value="<%=tempVal%>"/><%=tempVal%></label>
-										<%}%>
-									<%}else if(item['type'] == 3){%>
-										<select class="auto" name="attr_id_<%=item['id']%>">
-										<%for(var tempVal in valueItems){%>
-										<%tempVal = valueItems[tempVal]%>
-										<option value="<%=tempVal%>"><%=tempVal%></option>
-										<%}%>
-										</select>
-									<%}else if(item['type'] == 4){%>
-										<input type="text" name="attr_id_<%=item['id']%>" value="<%=item['value']%>" class="normal" />
-									<%}%>
-								</td>
-							</tr>
-							<%}%>
-							</script>
-							</table>
+							<input type='file' name='cover' />
+							{if:isset($this->sellerRow['cover']) && $this->sellerRow['cover']}
+							<p>
+								<a target="_blank" href="{webroot:}{$this->sellerRow['cover']}">
+									<img src='{webroot:}{$this->sellerRow['cover']}' style='width:320px;border:1px solid #ccc' />
+								</a>
+							</p>
+							{/if}
 						</td>
 					</tr>
 					<tr>
-						<th>众筹推荐类型：</th>
-						<td>
-							<label class="attr"><input name="_crowd_commend[]" type="checkbox" value="1" />最新众筹</label>
-							<label class="attr"><input name="_crowd_commend[]" type="checkbox" value="2" />特价众筹</label>
-							<label class="attr"><input name="_crowd_commend[]" type="checkbox" value="3" />热卖众筹</label>
-							<label class="attr"><input name="_crowd_commend[]" type="checkbox" value="4" />推荐众筹</label>
-						</td>
+						<th>详情描述：</th>
+						<td><textarea id="content" name="content" style="width:700px;height:400px;"></textarea></td>
 					</tr>
+					<!--多图上传 start-->
 					<tr>
-						<th>众筹品牌：</th>
-						<td>
-							<select class="auto" name="brand_id">
-								<option value="0">请选择</option>
-								{query:name=brand}
-								<option value="{$item['id']}">{$item['name']}</option>
-								{/query}
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<th>产品相册：</th>
+						<th>项目相册：</th>
 						<td>
 							<input class="middle" type="text" disabled />
 							<div class="upload_btn">
@@ -253,43 +180,175 @@
 					<tr>
 						<td></td>
 						<td id="thumbnails"></td>
-
 						<!--图片模板-->
 						<script type='text/html' id='picTemplate'>
-						<span class='pic'>
+							<span class='pic'>
 							<img onclick="defaultImage(this);" style="margin:5px; opacity:1;width:100px;height:100px" src="{webroot:<%=picRoot%>}" alt="<%=picRoot%>" /><br />
 							<a class='orange' href='javascript:void(0)' onclick="$(this).parent().remove();">删除</a>
 						</span>
 						</script>
 					</tr>
-				</table>
-			</div>
-
-			<div id="table_box_2" cellpadding="0" cellspacing="0" style="display:none">
-				<table class="form_table">
-					<col width="150px" />
-					<col />
-					<tr>
-						<th>详情采集：</th>
-						<td>
-							<input type='text' id='collectUrl' class='normal' />
-							<select id="collectType">
-								<option value="">请选择采集器</option>
-								<option value="jd">京东</option>
-								<option value="taobao">淘宝</option>
-							</select>
-							<button type='button' class='btn' onclick='collectAct();'><span>开始采集</span></button>
-							<label>部分详细资料属于异步加载，必须在前台页面可以正常显示</label>
-						</td>
-					</tr>
-					<tr>
-						<th>产品描述：</th>
-						<td><textarea id="content" name="content" style="width:700px;height:400px;"></textarea></td>
-					</tr>
+					<!--多图上传 end-->
 				</table>
 			</div>
 
 			<div id="table_box_3" cellpadding="0" cellspacing="0" style="display:none">
+				<table class="form_table">
+					<col width="150px" />
+					<col />
+					<!--多图上传 start-->
+					<tr>
+						<th>项目相册：</th>
+						<td>
+							<input class="middle" type="text" disabled />
+							<div class="upload_btn">
+								<span id="uploadButton"></span>
+							</div>
+							<label>可以上传多张图片，分辨率3000px以下，大小不得超过{echo:IUpload::getMaxSize()}</label>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td id="divFileProgressContainer"></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td id="thumbnails"></td>
+						<!--图片模板-->
+						<script type='text/html' id='picTemplate'>
+							<span class='pic'>
+							<img onclick="defaultImage(this);" style="margin:5px; opacity:1;width:100px;height:100px" src="{webroot:<%=picRoot%>}" alt="<%=picRoot%>" /><br />
+							<a class='orange' href='javascript:void(0)' onclick="$(this).parent().remove();">删除</a>
+						</span>
+						</script>
+					</tr>
+					<!--多图上传 end-->
+				</table>
+			</div>
+
+			<div id="table_box_4" cellpadding="0" cellspacing="0" style="display:none">
+				<table class="form_table">
+					<col width="150px" />
+					<col />
+					<tr>
+						<th>众筹模型：</th>
+						<td>
+							<select class="auto" name="model_id" onchange="create_attr(this.value)">
+								<option value="0">通用类型 </option>
+								{query:name=model}
+								<option value="{$item['id']}">{$item['name']}</option>
+								{/query}
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th>奖励设置：</th>
+						<td>
+							<div class="con">
+								<table class="border_table">
+									<thead id="crowdBaseHead"></thead>
+
+									<!--众筹标题模板-->
+									<script id="crowdHeadTemplate" type='text/html'>
+										<tr>
+											<th>奖励编号</th>
+											<%var isProduct = false;%>
+											<%for(var item in templateData){%>
+											<%isProduct = true;%>
+											<th><%=templateData[item]['name']%></th>
+											<%}%>
+											<th>限制名额（人）</th>
+											<th>投资金额（元）</th>
+											<th>回报内容</th>
+											<%if(isProduct == true){%>
+											<th>操作</th>
+											<%}%>
+										</tr>
+									</script>
+
+									<tbody id="crowdBaseBody"></tbody>
+
+									<!--众筹内容模板-->
+									<script id="crowdRowTemplate" type="text/html">
+										<%var i=0;%>
+										<%for(var item in templateData){%>
+										<%item = templateData[item]%>
+										<tr class='td_c'>
+											<td><input class="small" name="_crowd_no[<%=i%>]" pattern="required" type="text" value="<%=item['crowd_no'] ? item['crowd_no'] : item['products_no']%>" /></td>
+											<%var isProduct = false;%>
+											<%var specArrayList = parseJSON(item['spec_array'])%>
+											<%for(var result in specArrayList){%>
+											<%result = specArrayList[result]%>
+											<input type='hidden' name="_spec_array[<%=i%>][]" value='{"id":"<%=result.id%>","type":"<%=result.type%>","value":"<%=result.value%>","name":"<%=result.name%>"}' />
+											<%isProduct = true;%>
+											<td>
+												<%if(result['type'] == 1){%>
+												<%=result['value']%>
+												<%}else{%>
+												<img class="img_border" width="30px" height="30px" src="{webroot:<%=result['value']%>}">
+												<%}%>
+											</td>
+											<%}%>
+											<td><input class="small" name="_store_nums[<%=i%>]" type="text" pattern="int" value="<%=item['store_nums']?item['store_nums']:100%>" /></td>
+											<td><input class="small" name="_market_price[<%=i%>]" type="text" pattern="float" value="<%=item['market_price']%>" /></td>
+											<td><textarea class="tiny" name="_weight[<%=i%>]" type="text" pattern="float" empty value="<%=item['weight']%>" ></textarea></td>
+											<%if(isProduct == true){%>
+											<td><a href="javascript:void(0)" onclick="delProduct(this);"><img class="operator" src="{skin:images/admin/icon_del.gif}" alt="删除" /></a></td>
+											<%}%>
+										</tr>
+										<%i++;%>
+										<%}%>
+									</script>
+								</table>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>奖励：</th>
+						<td><button class="btn" type="button" onclick="selSpec()"><span class="add">添加奖励</span></button></td>
+					</tr>
+					<tr id="properties" style="display:none">
+						<th>扩展属性：</th>
+						<td>
+							<table class="border_table1" id="propert_table">
+								<script type='text/html' id='propertiesTemplate'>
+									<%for(var item in templateData){%>
+									<%item = templateData[item]%>
+									<%var valueItems = item['value'].split(',');%>
+									<tr>
+										<th><%=item["name"]%></th>
+										<td>
+											<%if(item['type'] == 1){%>
+											<%for(var tempVal in valueItems){%>
+											<%tempVal = valueItems[tempVal]%>
+											<label class="attr"><input type="radio" name="attr_id_<%=item['id']%>" value="<%=tempVal%>" /><%=tempVal%></label>
+											<%}%>
+											<%}else if(item['type'] == 2){%>
+											<%for(var tempVal in valueItems){%>
+											<%tempVal = valueItems[tempVal]%>
+											<label class="attr"><input type="checkbox" name="attr_id_<%=item['id']%>[]" value="<%=tempVal%>"/><%=tempVal%></label>
+											<%}%>
+											<%}else if(item['type'] == 3){%>
+											<select class="auto" name="attr_id_<%=item['id']%>">
+												<%for(var tempVal in valueItems){%>
+												<%tempVal = valueItems[tempVal]%>
+												<option value="<%=tempVal%>"><%=tempVal%></option>
+												<%}%>
+											</select>
+											<%}else if(item['type'] == 4){%>
+											<input type="text" name="attr_id_<%=item['id']%>" value="<%=item['value']%>" class="normal" />
+											<%}%>
+										</td>
+									</tr>
+									<%}%>
+								</script>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</div>
+
+			<div id="table_box_5" cellpadding="0" cellspacing="0" style="display:none">
 				<table class="form_table">
 					<col width="150px" />
 					<col />
@@ -307,7 +366,7 @@
 				<col />
 				<tr>
 					<td></td>
-					<td><button class="submit" type="submit" onclick="return checkForm()"><span>发布众筹</span></button></td>
+					<td><button class="submit" type="submit" onclick="return checkForm()"><span>发布项目</span></button></td>
 				</tr>
 			</table>
 		</form>
@@ -340,7 +399,7 @@ $(function()
 	$('[name="_crowd_no[0]"]').val(defaultProductNo);
 	{/if}
 
-	//存在货品信息,进行数据填充
+	//存在项目信息,进行数据填充
 	{if:isset($product)}
 	var spec_array = {echo:$product[0]['spec_array']};
 	var product    = {echo:JSON::encode($product)};
@@ -381,7 +440,7 @@ $(function()
 	KindEditorObj = KindEditor.create('#content',{"filterMode":false});
 });
 
-//初始化货品表格
+//初始化项目表格
 function initProductTable()
 {
 	//默认产生一条众筹标题空挡
@@ -393,7 +452,7 @@ function initProductTable()
 	$('#crowdBaseBody').html(crowdRowHtml);
 }
 
-//删除货品
+//删除项目
 function delProduct(_self)
 {
 	$(_self).parent().parent().remove();
@@ -428,64 +487,13 @@ function select_tab(curr_tab)
 	$('#li_'+curr_tab).addClass('selected');
 }
 
-/**
- * 会员价格
- * @param obj 按钮所处对象
- */
-function memberPrice(obj)
-{
-	var sellPrice = $(obj).siblings('input[name^="_sell_price"]')[0].value;
-	if($.isNumeric(sellPrice) == false)
-	{
-		alert('请先设置众筹的价格再设置会员价格');
-		return;
-	}
-
-	var groupPriceValue = $(obj).siblings('input[name^="_groupPrice"]');
-
-	//用户组的价格
-	art.dialog.data('groupPrice',groupPriceValue.val());
-
-	//开启新页面
-	var tempUrl = '{url:/crowd/member_price/sell_price/@sell_price@}';
-	tempUrl = tempUrl.replace('@sell_price@',sellPrice);
-	art.dialog.open(tempUrl,{
-		id:'memberPriceWindow',
-	    title: '此众筹对于会员组价格',
-	    ok:function(iframeWin, topWin)
-	    {
-	    	var formObject = iframeWin.document.forms['groupPriceForm'];
-	    	var groupPriceObject = {};
-	    	$(formObject).find('input[name^="groupPrice"]').each(function(){
-	    		if(this.value != '')
-	    		{
-	    			//去掉前缀获取group的ID
-		    		var groupId = this.name.replace('groupPrice','');
-
-		    		//拼接json串
-		    		groupPriceObject[groupId] = this.value;
-	    		}
-	    	});
-
-	    	//更新会员价格值
-    		var temp = [];
-    		for(var gid in groupPriceObject)
-    		{
-    			temp.push('"'+gid+'":"'+groupPriceObject[gid]+'"');
-    		}
-    		groupPriceValue.val('{'+temp.join(',')+'}');
-    		return true;
-		}
-	});
-}
-
 //添加规格
 function selSpec()
 {
-	//货品是否已经存在
+	//项目是否已经存在
 	if($('input:hidden[name^="_spec_array"]').length > 0)
 	{
-		alert('当前货品已经存在，无法进行规格设置。<p>如果需要重新设置规格请您手动删除当前货品</p>');
+		alert('当前项目已经存在，无法进行规格设置。<p>如果需要重新设置规格请您手动删除当前项目</p>');
 		return;
 	}
 
@@ -526,7 +534,7 @@ function selSpec()
 				});
 			});
 
-			//生成货品的笛卡尔积
+			//生成项目的笛卡尔积
 			var specMaxData = descartes(specValueData,specData);
 
 			//从表单中获取默认众筹数据
@@ -535,14 +543,14 @@ function selSpec()
 				productJson[this.name.replace(/^_(\w+)\[\d+\]/g,"$1")] = this.value;
 			});
 
-			//生成最终的货品数据
+			//生成最终的项目数据
 			var productList = [];
 			for(var i = 0;i < specMaxData.length;i++)
 			{
 				var productItem = {};
 				for(var index in productJson)
 				{
-					//自动组建货品号
+					//自动组建项目号
 					if(index == 'crowd_no')
 					{
 						//值为空时设置默认货号
@@ -575,7 +583,7 @@ function selSpec()
 			var crowdHeadHtml = template.render('crowdHeadTemplate',{'templateData':specData});
 			$('#crowdBaseHead').html(crowdHeadHtml);
 
-			//创建货品数据表格
+			//创建项目数据表格
 			var crowdRowHtml = template.render('crowdRowTemplate',{'templateData':productList});
 			$('#crowdBaseBody').html(crowdRowHtml);
 		}
@@ -716,31 +724,5 @@ function wordsPart()
 			}
 		});
 	}
-}
-
-//开始采集众筹详情
-function collectAct()
-{
-	var collectType = $('#collectType').val();
-	var collectUrl  = $('#collectUrl').val();
-
-	if(!collectType || !collectUrl)
-	{
-		alert("请选择采集器并且填写完整的众筹详情页URL网址");
-		return;
-	}
-
-	$.getJSON("{url:/crowd/collect_crowd_detail}",{"collectType":collectType,"collectUrl":collectUrl},function(json)
-	{
-		if(json.result == 'success')
-		{
-			KindEditorObj.html(json.data);
-			KindEditorObj.sync();
-		}
-		else
-		{
-			alert(json.msg);
-		}
-	});
 }
 </script>
