@@ -32,7 +32,7 @@ class Proxy
 	 */
 	public static function getLocalVersion()
 	{
-		return include(Web::$app->getBasePath() . 'docs/version.php');
+		return include(Web::$app->getBasePath() . 'api/version.php');
 	}
 
 	/**
