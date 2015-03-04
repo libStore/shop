@@ -1455,7 +1455,6 @@ CREATE TABLE `{pre}admin_role` (
 DROP TABLE IF EXISTS `{pre}seller`;
 CREATE TABLE `{pre}seller` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `seller_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0：电商 1：众筹',
   `seller_name` varchar(80) NOT NULL COMMENT '商户登录用户名',
   `password` char(32) NOT NULL COMMENT '商户密码',
   `create_time` datetime DEFAULT NULL COMMENT '加入时间',
