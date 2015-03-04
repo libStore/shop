@@ -22,57 +22,42 @@ class Menu
     //菜单的配制数据
 	private static $menu = array(
 		'商品'=>array(
-			'商品管理'=>array(
-				'/goods/goods_list' => '商品列表',
-				'/goods/goods_edit' => '商品添加'
+			'商品'=>array(
+				'/goods/goods_list'     =>  '商品列表',
+                '/goods/category_list'	=>  '商品分类'
 			),
-			'商品分类'=>array(
-				'/goods/category_list'	=>	'分类列表',
-				'/goods/category_edit'	=>	'添加分类'
+			'众筹'=>array(
+                '/crowd/crowd_list'     =>  '众筹列表',
+                '/crowd/category_list'	=>	'众筹分类'
 			),
 			'品牌'=>array(
-				'/brand/category_list'  =>	'品牌分类',
-				'/brand/brand_list'		=>	'品牌列表'
+				'/brand/brand_list'		=>	'品牌列表',
+                '/brand/category_list'  =>	'品牌分类'
 			),
 			'模型'=>array(
-				'/goods/model_list'=>'模型列表',
-				'/goods/spec_list'=>'规格列表',
-				'/goods/spec_photo'=>'规格图库'
+				'/goods/model_list'     =>  '模型列表',
+				'/goods/spec_list'      =>  '规格列表',
+				'/goods/spec_photo'     =>  '规格图库'
 			),
 			'搜索'=>array(
-				'/tools/keyword_list' => '关键词列表',
-				'/tools/search_list' => '搜索统计'
-			)
-		),
-
-		'众筹'=>array(
-			'众筹管理'=>array(
-				'/crowd/crowd_list' => '项目列表',
-				'/crowd/crowd_edit' => '项目添加'
-			),
-			'众筹分类'=>array(
-				'/crowd/category_list'	=>	'分类列表',
-				'/crowd/category_edit'	=>	'添加分类'
-			),
-			'搜索'=>array(
-				'/tools/keyword_list' => '关键词列表',
-				'/tools/search_list' => '搜索统计'
+				'/tools/keyword_list'   =>  '关键词列表',
+				'/tools/search_list'    =>  '搜索统计'
 			)
 		),
 
 		'会员'=>array(
 			'用户管理'=>array(
-	    		'/member/member_list' => '用户列表',
-				'/member/member_edit' => '添加用户',
-	     		'/member/group_list' => '分组管理',
-				'/member/level_list' => '级别管理',
-				'/member/identity_list' => '身份管理',
-	     		'/member/withdraw_list'=> '提现管理'
+	    		'/member/member_list'   =>  '用户列表',
+	     		'/member/group_list'    =>  '分组管理',
+				'/member/level_list'    =>  '级别管理',
+				'/member/identity_list' =>  '身份管理',
+	     		'/member/withdraw_list' =>  '提现管理',
+	     		'/member/deposit_list'  =>  '充值管理'
 			),
 
 			'商户管理' => array(
-				'/member/seller_list' => '商户列表',
-				'/member/seller_edit' => '添加商户',
+				'/member/seller_list'   => '商户列表',
+				'/member/seller_bank'   => '商户银行',
 			),
 
 			'信息处理' => array(
@@ -91,8 +76,8 @@ class Menu
 
 	   '订单'=>array(
         	'订单管理'=>array(
-                '/order/order_list' => '订单列表',
-                '/order/order_edit' => '添加订单'
+                '/order/order_list'     =>  '订单列表',
+                '/order/order_edit'     =>  '添加订单'
         	),
         	'单据管理'=>array(
              	'/order/order_collection_list'  => '收款单',
@@ -107,15 +92,15 @@ class Menu
 
 		'营销'=>array(
         	'促销活动' => array(
-        		'/market/pro_rule_list' => '促销活动列表'
+        		'/market/pro_rule_list'     =>  '促销活动列表'
         	),
         	'营销活动' => array(
-        		'/market/pro_speed_list' => '限时抢购',
-        		'/market/regiment_list' => '团购',
+        		'/market/pro_speed_list'    =>  '限时抢购',
+        		'/market/regiment_list'     =>  '团购',
         	),
         	'代金券管理'=>array(
-        		'/market/ticket_list'       => '代金券列表',
-        		'/market/ticket_excel_list' => '代金券文件列表',
+        		'/market/ticket_list'       =>  '代金券列表',
+        		'/market/ticket_excel_list' =>  '代金券文件列表',
         	)
 		),
 
@@ -130,30 +115,30 @@ class Menu
 				'/market/operation_list' => '后台操作记录',
 			),
 			'商户数据统计'=>array(
-				'/market/order_goods_list' => '货款明细列表',
-				'/market/bill_list' => '货款结算申请',
+				'/market/order_goods_list'  => '货款明细列表',
+				'/market/bill_list'         => '货款结算申请',
 			)
 		),
 
 
         '系统'=>array(
     		'后台首页'=>array(
-    			'/system/default' => '后台首页',
+    			'/system/default'      => '后台首页',
     		),
         	'网站管理'=>array(
-        		'/system/conf_base' => '网站设置',
-        		'/system/conf_ui'   => '主题设置',
+        		'/system/conf_base'    => '网站设置',
+        		'/system/conf_ui'      => '主题设置',
         	),
         	'支付管理'=>array(
             	'/system/payment_list' => '支付方式'
         	),
         	'多平台登录'=>array(
-            	'/system/oauth_list' => '平台列表'
+            	'/system/oauth_list'    => '平台列表'
         	),
         	'配送管理'=>array(
-            	'/system/delivery'  	=> '配送方式',
-        		'/system/freight_list'	=> '物流公司',
-	    		'/system/takeself_list' => '自提点列表',
+            	'/system/delivery'       => '配送方式',
+        		'/system/freight_list'   => '物流公司',
+	    		'/system/takeself_list'  => '自提点列表',
 	    		'/system/takeself_edit'  => '添加自提点',
         	),
         	'地域管理'=>array(
