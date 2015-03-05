@@ -35,7 +35,7 @@
 			<col />
 			<tbody>
 				{set:$page= (isset($_GET['page'])&&(intval($_GET['page'])>0))?intval($_GET['page']):1;}
-				{query:name=spec where=is_del eq 1 page=$page pagesize=20}
+				{query:name=crowd_spec where=is_del eq 1 page=$page pagesize=20}
 				<tr>
 					<td class="t_c"><input type="checkbox" name="id[]" value="{$item['id']}" /></td>
 					<td>{$item['name']}</td>

@@ -23,25 +23,29 @@ class Menu
 	private static $menu = array(
 		'商品'=>array(
 			'商品'=>array(
-				'/goods/goods_list'     =>  '商品列表',
+				'/goods/goods_list'     	=>  '商品列表',
                 '/goods/category_list'	=>  '商品分类'
-			),
-			'众筹'=>array(
-                '/crowd/crowd_list'     =>  '众筹列表',
-                '/crowd/category_list'	=>	'众筹分类'
-			),
-			'品牌'=>array(
-				'/brand/brand_list'		=>	'品牌列表',
-                '/brand/category_list'  =>	'品牌分类'
 			),
 			'模型'=>array(
 				'/goods/model_list'     =>  '模型列表',
 				'/goods/spec_list'      =>  '规格列表',
 				'/goods/spec_photo'     =>  '规格图库'
 			),
-			'搜索'=>array(
-				'/tools/keyword_list'   =>  '关键词列表',
-				'/tools/search_list'    =>  '搜索统计'
+			'品牌'=>array(
+				'/brand/brand_list'		=>	'品牌列表',
+                '/brand/category_list'  =>	'品牌分类'
+			)
+		),
+
+		'众筹'=>array(
+			'众筹'=>array(
+                '/crowd/crowd_list'     	=>  '众筹列表',
+                '/crowd/category_list'  =>	'众筹分类'
+			),
+			'模型'=>array(
+				'/crowd/model_list'     =>  '模型列表',
+				'/crowd/spec_list'      =>  '规格列表',
+				'/crowd/spec_photo'     =>  '规格图库'
 			)
 		),
 
@@ -152,10 +156,10 @@ class Menu
 		),
 
        '工具'=>array(
-			'数据库管理'=>array(
-				'/tools/db_bak' => '数据库备份',
-				'/tools/db_res' => '数据库还原',
-			),
+		   '搜索管理'=>array(
+			   '/tools/keyword_list' => '关键词列表',
+			   '/tools/search_list' => '搜索统计'
+		   ),
 			'文章管理'=>array(
 				'/tools/article_cat_list'=> '文章分类',
 				'/tools/article_list'=> '文章列表'
@@ -175,6 +179,10 @@ class Menu
    				'/tools/notice_list'=> '公告列表',
    				'/tools/notice_edit'=> '公告发布'
    			),
+		   '数据库管理'=>array(
+			   '/tools/db_bak' => '数据库备份',
+			   '/tools/db_res' => '数据库还原',
+		   ),
      		'网站地图'=>array(
             	'/tools/seo_sitemaps' => '网站搜索地图',
 			)

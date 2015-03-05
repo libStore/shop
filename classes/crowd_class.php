@@ -144,10 +144,14 @@ class crowd_class
 
 		$crowdUpdateData['crowd_no']     = isset($postData['_crowd_no'])     ? current($postData['_crowd_no'])     : '';
 		$crowdUpdateData['store_nums']   = array_sum($postData['_store_nums']);
-		$crowdUpdateData['market_price'] = isset($postData['_market_price']) ? current($postData['_market_price']) : 0;
-		$crowdUpdateData['sell_price']   = isset($postData['_sell_price'])   ? current($postData['_sell_price'])   : 0;
-		$crowdUpdateData['cost_price']   = isset($postData['_cost_price'])   ? current($postData['_cost_price'])   : 0;
-		$crowdUpdateData['weight']       = isset($postData['_weight'])       ? current($postData['_weight'])       : 0;
+
+		$crowdUpdateData['amount_total'] = $postData['amount_total'];
+		$crowdUpdateData['amount_self']  = $postData['amount_self'];
+		$crowdUpdateData['amount_loan']  = $postData['amount_loan'];
+		$crowdUpdateData['amount_mini']  = $postData['amount_mini'];
+		$crowdUpdateData['expire_days']  = $postData['expire_days'];
+
+		$crowdUpdateData['update_time'] = $nowDataTime;
 
 		//处理众筹
 		$crowdDB = new IModel('crowd');
@@ -192,18 +196,18 @@ class crowd_class
 		}
 
 		//是否存在货品
-		$productsDB = new IModel('products');
-		$productsDB->del('crowd_id = '.$id);
+		$projectsDB = new IModel('projects');
+		$projectsDB->del('crowd_id = '.$id);
 		if(isset($postData['_spec_array']))
 		{
-			$productIdArray = array();
+			$projectIdArray = array();
 
 			//创建货品信息
 			foreach($postData['_crowd_no'] as $key => $rs)
 			{
-				$productsData = array(
+				$projectsData = array(
 					'crowd_id' => $id,
-					'products_no' => $postData['_crowd_no'][$key],
+					'project_no' => $postData['_crowd_no'][$key],
 					'store_nums' => $postData['_store_nums'][$key],
 					'market_price' => $postData['_market_price'][$key],
 					'sell_price' => $postData['_sell_price'][$key],
@@ -211,13 +215,13 @@ class crowd_class
 					'weight' => $postData['_weight'][$key],
 					'spec_array' => "[".join(',',$postData['_spec_array'][$key])."]"
 				);
-				$productsDB->setData($productsData);
-				$productIdArray[$key] = $productsDB->add();
+				$projectsDB->setData($projectsData);
+				$projectIdArray[$key] = $projectsDB->add();
 			}
 		}
 
 		//处理众筹分类
-		$categoryDB = new IModel('category_extend');
+		$categoryDB = new IModel('crowd_category_extend');
 		$categoryDB->del('crowd_id = '.$id);
 		if(isset($postData['_crowd_category']) && $postData['_crowd_category'])
 		{
@@ -229,7 +233,7 @@ class crowd_class
 		}
 
 		//处理众筹促销
-		$commendDB = new IModel('commend_crowd');
+		$commendDB = new IModel('crowd_commend');
 		$commendDB->del('crowd_id = '.$id);
 		if(isset($postData['_crowd_commend']) && $postData['_crowd_commend'])
 		{
@@ -262,11 +266,11 @@ class crowd_class
 		}
 
 		//处理会员组的价格
-		$groupPriceDB = new IModel('group_price');
+		$groupPriceDB = new IModel('crowd_group_price');
 		$groupPriceDB->del('crowd_id = '.$id);
-		if(isset($productIdArray) && $productIdArray)
+		if(isset($projectIdArray) && $projectIdArray)
 		{
-			foreach($productIdArray as $index => $value)
+			foreach($projectIdArray as $index => $value)
 			{
 				if(isset($postData['_groupPrice'][$index]) && $postData['_groupPrice'][$index])
 				{
@@ -275,7 +279,7 @@ class crowd_class
 					{
 						$groupPriceDB->setData(array(
 							'crowd_id' => $id,
-							'product_id' => $value,
+							'project_id' => $value,
 							'group_id' => $k,
 							'price' => $v
 						));
@@ -343,8 +347,8 @@ class crowd_class
 		}
 
 		//获取众筹的会员价格
-		$groupPriceDB = new IModel('group_price');
-		$crowdPrice   = $groupPriceDB->query("crowd_id = ".$crowd_info['id']." and product_id is NULL ");
+		$groupPriceDB = new IModel('crowd_group_price');
+		$crowdPrice   = $groupPriceDB->query("crowd_id = ".$crowd_info['id']." and project_id is NULL ");
 		$temp = array();
 		foreach($crowdPrice as $key => $val)
 		{
@@ -356,26 +360,26 @@ class crowd_class
 		$data = array('form' => $crowd_info);
 
 		//获取货品
-		$productObj = new IModel('products');
-		$product_info = $productObj->query('crowd_id = '.$id);
-		if($product_info)
+		$projectObj = new IModel('projects');
+		$project_info = $projectObj->query('crowd_id = '.$id);
+		if($project_info)
 		{
 			//获取货品会员价格
-			foreach($product_info as $k => $rs)
+			foreach($project_info as $k => $rs)
 			{
 				$temp = array();
-				$productPrice = $groupPriceDB->query('product_id = '.$rs['id']);
-				foreach($productPrice as $key => $val)
+				$projectPrice = $groupPriceDB->query('project_id = '.$rs['id']);
+				foreach($projectPrice as $key => $val)
 				{
 					$temp[$val['group_id']] = $val['price'];
 				}
-				$product_info[$k]['groupPrice'] = $temp ? JSON::encode($temp) : '';
+				$project_info[$k]['groupPrice'] = $temp ? JSON::encode($temp) : '';
 			}
-			$data['product'] = $product_info;
+			$data['project'] = $project_info;
 		}
 
 		//加载推荐类型
-		$tb_commend_crowd = new IModel('commend_crowd');
+		$tb_commend_crowd = new IModel('crowd_commend');
 		$commend_crowd = $tb_commend_crowd->query('crowd_id='.$crowd_info['id'],'commend_id');
 		if($commend_crowd)
 		{
@@ -407,7 +411,7 @@ class crowd_class
 		}
 
 		//众筹分类
-		$categoryExtend = new IQuery('category_extend');
+		$categoryExtend = new IQuery('crowd_category_extend');
 		$categoryExtend->where = 'crowd_id = '.$crowd_info['id'];
 		$tb_crowd_photo->fields = 'category_id';
 		$cateData = $categoryExtend->find();

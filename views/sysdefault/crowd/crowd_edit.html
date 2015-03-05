@@ -235,7 +235,7 @@
 						<td>
 							<select class="auto" name="model_id" onchange="create_attr(this.value)">
 								<option value="0">通用类型 </option>
-								{query:name=model}
+								{query:name=crowd_model}
 								<option value="{$item['id']}">{$item['name']}</option>
 								{/query}
 							</select>
@@ -252,15 +252,15 @@
 									<script id="crowdHeadTemplate" type='text/html'>
 										<tr>
 											<th>奖励编号</th>
-											<%var isProduct = false;%>
+											<%var isProject = false;%>
 											<%for(var item in templateData){%>
-											<%isProduct = true;%>
+											<%isProject = true;%>
 											<th><%=templateData[item]['name']%></th>
 											<%}%>
 											<th>限制名额（人）</th>
 											<th>投资金额（元）</th>
 											<th>回报内容</th>
-											<%if(isProduct == true){%>
+											<%if(isProject == true){%>
 											<th>操作</th>
 											<%}%>
 										</tr>
@@ -274,13 +274,13 @@
 										<%for(var item in templateData){%>
 										<%item = templateData[item]%>
 										<tr class='td_c'>
-											<td><input class="small" name="_crowd_no[<%=i%>]" pattern="required" type="text" value="<%=item['crowd_no'] ? item['crowd_no'] : item['products_no']%>" /></td>
-											<%var isProduct = false;%>
+											<td><input class="small" name="_crowd_no[<%=i%>]" pattern="required" type="text" value="<%=item['crowd_no'] ? item['crowd_no'] : item['projects_no']%>" /></td>
+											<%var isProject = false;%>
 											<%var specArrayList = parseJSON(item['spec_array'])%>
 											<%for(var result in specArrayList){%>
 											<%result = specArrayList[result]%>
 											<input type='hidden' name="_spec_array[<%=i%>][]" value='{"id":"<%=result.id%>","type":"<%=result.type%>","value":"<%=result.value%>","name":"<%=result.name%>"}' />
-											<%isProduct = true;%>
+											<%isProject = true;%>
 											<td>
 												<%if(result['type'] == 1){%>
 												<%=result['value']%>
@@ -292,8 +292,8 @@
 											<td><input class="small" name="_store_nums[<%=i%>]" type="text" pattern="int" value="<%=item['store_nums']?item['store_nums']:100%>" /></td>
 											<td><input class="small" name="_market_price[<%=i%>]" type="text" pattern="float" value="<%=item['market_price']%>" /></td>
 											<td><textarea class="tiny" name="_weight[<%=i%>]" type="text" pattern="float" empty value="<%=item['weight']%>" ></textarea></td>
-											<%if(isProduct == true){%>
-											<td><a href="javascript:void(0)" onclick="delProduct(this);"><img class="operator" src="{skin:images/admin/icon_del.gif}" alt="删除" /></a></td>
+											<%if(isProject == true){%>
+											<td><a href="javascript:void(0)" onclick="delProject(this);"><img class="operator" src="{skin:images/admin/icon_del.gif}" alt="删除" /></a></td>
 											<%}%>
 										</tr>
 										<%i++;%>
@@ -378,11 +378,11 @@
 var formObj = new Form('crowdForm');
 
 //默认货号
-var defaultProductNo = '{echo:crowd_class::createCrowdNo()}';
+var defaultProjectNo = '{echo:crowd_class::createCrowdNo()}';
 
 $(function()
 {
-	initProductTable();
+	initProjectTable();
 
 	//存在众筹信息
 	{if:isset($form)}
@@ -396,18 +396,18 @@ $(function()
 	//模型选择
 	$('[name="model_id"]').change();
 	{else:}
-	$('[name="_crowd_no[0]"]').val(defaultProductNo);
+	$('[name="_crowd_no[0]"]').val(defaultProjectNo);
 	{/if}
 
 	//存在项目信息,进行数据填充
-	{if:isset($product)}
-	var spec_array = {echo:$product[0]['spec_array']};
-	var product    = {echo:JSON::encode($product)};
+	{if:isset($project)}
+	var spec_array = {echo:$project[0]['spec_array']};
+	var project    = {echo:JSON::encode($project)};
 
 	var crowdHeadHtml = template.render('crowdHeadTemplate',{'templateData':spec_array});
 	$('#crowdBaseHead').html(crowdHeadHtml);
 
-	var crowdRowHtml = template.render('crowdRowTemplate',{'templateData':product});
+	var crowdRowHtml = template.render('crowdRowTemplate',{'templateData':project});
 	$('#crowdBaseBody').html(crowdRowHtml);
 	{/if}
 
@@ -441,7 +441,7 @@ $(function()
 });
 
 //初始化项目表格
-function initProductTable()
+function initProjectTable()
 {
 	//默认产生一条众筹标题空挡
 	var crowdHeadHtml = template.render('crowdHeadTemplate',{'templateData':[]});
@@ -453,12 +453,12 @@ function initProductTable()
 }
 
 //删除项目
-function delProduct(_self)
+function delProject(_self)
 {
 	$(_self).parent().parent().remove();
 	if($('#crowdBaseBody tr').length == 0)
 	{
-		initProductTable();
+		initProjectTable();
 	}
 }
 
@@ -513,7 +513,7 @@ function selSpec()
 			var addSpecObject = $(iframeWin.document).find('[id^="vertical_"]');
 			if(addSpecObject.length == 0)
 			{
-				initProductTable();
+				initProjectTable();
 				return;
 			}
 
@@ -538,45 +538,45 @@ function selSpec()
 			var specMaxData = descartes(specValueData,specData);
 
 			//从表单中获取默认众筹数据
-			var productJson = {};
+			var projectJson = {};
 			$('#crowdBaseBody tr:first').find('input[type="text"]').each(function(){
-				productJson[this.name.replace(/^_(\w+)\[\d+\]/g,"$1")] = this.value;
+				projectJson[this.name.replace(/^_(\w+)\[\d+\]/g,"$1")] = this.value;
 			});
 
 			//生成最终的项目数据
-			var productList = [];
+			var projectList = [];
 			for(var i = 0;i < specMaxData.length;i++)
 			{
-				var productItem = {};
-				for(var index in productJson)
+				var projectItem = {};
+				for(var index in projectJson)
 				{
 					//自动组建项目号
 					if(index == 'crowd_no')
 					{
 						//值为空时设置默认货号
-						if(productJson[index] == '')
+						if(projectJson[index] == '')
 						{
-							productJson[index] = defaultProductNo;
+							projectJson[index] = defaultProjectNo;
 						}
 
-						if(productJson[index].match(/(?:\-\d*)$/) == null)
+						if(projectJson[index].match(/(?:\-\d*)$/) == null)
 						{
 							//正常货号生成
-							productItem['crowd_no'] = productJson[index]+'-'+(i+1);
+							projectItem['crowd_no'] = projectJson[index]+'-'+(i+1);
 						}
 						else
 						{
 							//货号已经存在则替换
-							productItem['crowd_no'] = productJson[index].replace(/(?:\-\d*)$/,'-'+(i+1));
+							projectItem['crowd_no'] = projectJson[index].replace(/(?:\-\d*)$/,'-'+(i+1));
 						}
 					}
 					else
 					{
-						productItem[index] = productJson[index];
+						projectItem[index] = projectJson[index];
 					}
 				}
-				productItem['spec_array'] = specMaxData[i];
-				productList.push(productItem);
+				projectItem['spec_array'] = specMaxData[i];
+				projectList.push(projectItem);
 			}
 
 			//创建规格标题
@@ -584,7 +584,7 @@ function selSpec()
 			$('#crowdBaseHead').html(crowdHeadHtml);
 
 			//创建项目数据表格
-			var crowdRowHtml = template.render('crowdRowTemplate',{'templateData':productList});
+			var crowdRowHtml = template.render('crowdRowTemplate',{'templateData':projectList});
 			$('#crowdBaseBody').html(crowdRowHtml);
 		}
 	});

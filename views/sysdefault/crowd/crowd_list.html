@@ -39,7 +39,7 @@
 			</select>
 			<select class="auto" name="search[category_id]">
 				<option value="">选择分类</option>
-				{query:name=category}
+				{query:name=crowd_category}
 				<option value="{$item['id']}">{$item['name']}</option>
 				{/query}
 			</select>
@@ -115,10 +115,10 @@
 			{foreach:items = $this->crowdHandle->find()}
 			<tr>
 				<td><input name="id[]" type="checkbox" value="{$item['id']}" /></td>
-				<td><img src='{url:/pic/thumb/img/$item[img]/w/100/h/100}' class='ico' /><a class="orange" href="javascript:jumpUrl('{$item['is_del']}','{url:/site/products/id/$item[id]}')" title="{$item['name']}">{$item['name']}</a></td>
+				<td><img src='{url:/pic/thumb/img/$item[img]/w/100/h/100}' class='ico' /><a class="orange" href="javascript:jumpUrl('{$item['is_del']}','{url:/site/projects/id/$item[id]}')" title="{$item['name']}">{$item['name']}</a></td>
 				<td>
 					{set:$catName = array()}
-					{query:name=category_extend as ce join=left join category as cd on cd.id eq ce.category_id fields=cd.name where=crowd_id eq $item[id] item=$catData}
+					{query:name=crowd_category_extend as ce join=left join crowd_category as cd on cd.id eq ce.category_id fields=cd.name where=crowd_id eq $item[id] item=$catData}
 					{set:$catName[] = $catData['name']}
 					{/query}
 					{echo:join(',',$catName)}

@@ -33,7 +33,7 @@
 								<col width="100px" />
 								<col />
 								<tr>
-									<th>数据库地址</th><td><input class="gray" type="text" name='db_address' value='localhost:3306' /><br /><label>MYSQL数据库的地址，本地默认：localhost:3306</label></td>
+									<th>数据库地址</th><td><input class="gray" type="text" name='db_address' value='localhost:3306' /><br /><label>默认：localhost:3306</label></td>
 								</tr>
 								<tr>
 									<th>数据库名称</th>
@@ -47,11 +47,11 @@
 								</tr>
 								<tr>
 									<th>密码</th>
-									<td><input class="gray" type="password" name='db_pwd' value="root"/></td>
+									<td><input class="gray" type="password" name='db_pwd' value=""/></td>
 								</tr>
 								<tr>
 									<th>数据库表前缀</th>
-									<td><input class="gray" type="text" value='appoil_' name='db_pre' /><br /><label class="error" id='db_pre_label' style='display:none'><img src="images/failed.gif" width="16" height="15" />请填写正确的表前缀字符</label></td>
+									<td><input class="gray" type="text" value='app_' name='db_pre' /><br /><label class="error" id='db_pre_label' style='display:none'><img src="images/failed.gif" width="16" height="15" />请填写正确的表前缀字符</label></td>
 								</tr>
 								<tr>
 									<th></th><td><input class="check" type="button" onclick="check_mysql();" /></td>
@@ -91,8 +91,8 @@
 							<hr />
 
 							<strong>安装选择</strong>
-							<label><input class="radio" type="radio" name='install_type' value='all' />测试数据版本(<span style="color:red">确认PC能访问公网，采集的时间需要5-10分钟，如果安装失败建议纯净版本</span>)</label><br />
-							<label><input class="radio" type="radio" name='install_type' checked="checked" value='simple' />绿色纯净版</label>
+							<label><input class="radio" type="radio" name='install_type' value='all' />测试版(<span style="color:red">包含测试数据，用于测试环境</span>)</label><br />
+							<label><input class="radio" type="radio" name='install_type' checked="checked" value='simple' />纯净版(<span style="color:red">用于生产环境</span>)</label>
 
 							<hr />
 

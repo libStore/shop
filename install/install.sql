@@ -584,13 +584,11 @@ DROP TABLE IF EXISTS `{pre}group_price`;
 CREATE TABLE `{pre}group_price` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `goods_id` int(11) unsigned NOT NULL COMMENT '产品ID',
-  `crowd_id` int(11) unsigned NOT NULL COMMENT '众筹ID',
   `product_id` int(11) unsigned default NULL COMMENT '货品ID',
   `group_id` int(11) unsigned NOT NULL COMMENT '用户组ID',
   `price` decimal(15,2) NOT NULL default '0.00' COMMENT '价格',
   PRIMARY KEY  (`id`),
   index (`goods_id`),
-  index (`crowd_id`),
   index (`group_id`),
   index (`product_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='记录某件商品对于某组会员的价格关系表，优先权大于组设定的折扣率';
@@ -927,7 +925,7 @@ DROP TABLE IF EXISTS `{pre}products`;
 CREATE TABLE `{pre}products` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `goods_id` int(11) unsigned NOT NULL COMMENT '货品ID',
-  `crowd_id` int(11) unsigned NOT NULL COMMENT '项目ID', # TODO 删除
+  `crowd_id` int(11) unsigned NOT NULL COMMENT '项目ID',
   `products_no` varchar(20) NOT NULL COMMENT '货品的货号(以商品的货号加横线加数字组成)',
   `spec_array` text COMMENT 'json规格数据',
   `store_nums` int(11) NOT NULL default '0' COMMENT '库存',
@@ -937,7 +935,7 @@ CREATE TABLE `{pre}products` (
   `weight` decimal(15,2) NOT NULL default '0.00' COMMENT '重量',
   PRIMARY KEY  (`id`),
   index (`goods_id`),
-  index (`crowd_id`) # TODO 删除
+  index (`crowd_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='货品表';
 
 -- --------------------------------------------------------
@@ -1480,6 +1478,8 @@ CREATE TABLE `{pre}seller` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='商户表';
 
+INSERT INTO `{pre}seller` (seller_type, seller_name, password, true_name) VALUES ();
+
 -- --------------------------------------------------------
 
 --
@@ -1572,7 +1572,7 @@ CREATE TABLE `{pre}crowd_reward` (
 -- --------------------------------------------------------
 
 --
--- 表的结构 `{pre}category`
+-- 表的结构 `{pre}crowd_category`
 --
 
 DROP TABLE IF EXISTS `{pre}crowd_category`;
@@ -1599,17 +1599,51 @@ INSERT INTO `{pre}crowd_category` (`id`,`name`,`parent_id`,`sort`,`visibility`) 
 INSERT INTO `{pre}crowd_category` (`id`,`name`,`parent_id`,`sort`,`visibility`) VALUES (7,'公益',0,0,1);
 INSERT INTO `{pre}crowd_category` (`id`,`name`,`parent_id`,`sort`,`visibility`) VALUES (8,'其他',0,0,1);
 
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}crowd_category_extend`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_category_extend`;
+CREATE TABLE `{pre}crowd_category_extend` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `crowd_id` int(11) unsigned NOT NULL COMMENT '众筹ID',
+  `category_id` int(11) unsigned NOT NULL COMMENT '众筹分类ID',
+  PRIMARY KEY  (`id`),
+  index (`crowd_id`),
+  index (`category_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='商品扩展分类表';
 
 -- --------------------------------------------------------
 
 --
--- 表的结构 `{pre}commend_crowd`
+-- 表的结构 `{pre}crowd_group_price`
 --
 
-DROP TABLE IF EXISTS `{pre}commend_crowd`;
-CREATE TABLE `{pre}commend_crowd` (
+DROP TABLE IF EXISTS `{pre}crowd_group_price`;
+CREATE TABLE `{pre}crowd_group_price` (
   `id` int(11) unsigned NOT NULL auto_increment,
-  `commend_id` int(11) unsigned NOT NULL COMMENT '推荐类型ID 1:最新商品 2:特价商品 3:热卖排行 4:推荐商品',
+  `crowd_id` int(11) unsigned NOT NULL COMMENT '众筹ID',
+  `project_id` int(11) unsigned default NULL COMMENT '众筹项目ID',
+  `group_id` int(11) unsigned NOT NULL COMMENT '用户组ID',
+  `price` decimal(15,2) NOT NULL default '0.00' COMMENT '价格',
+  PRIMARY KEY  (`id`),
+  index (`crowd_id`),
+  index (`group_id`),
+  index (`project_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='记录某件众筹项目对于某组会员的价格关系表，优先权大于组设定的折扣率';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}crowd_commend`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_commend`;
+CREATE TABLE `{pre}crowd_commend` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `commend_id` int(11) unsigned NOT NULL COMMENT '推荐类型ID 1:最新众筹 2:特价众筹 3:热卖排行 4:推荐众筹',
   `crowd_id` int(11) unsigned NOT NULL COMMENT '众筹项目ID',
   PRIMARY KEY  (`id`),
   index (`crowd_id`),
@@ -1638,6 +1672,76 @@ CREATE TABLE `{pre}crowd_attribute` (
 -- --------------------------------------------------------
 
 --
+-- 表的结构 `{pre}projects`
+--
+
+DROP TABLE IF EXISTS `{pre}projects`;
+CREATE TABLE `{pre}projects` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `crowd_id` int(11) unsigned NOT NULL COMMENT '项目ID',
+  `project_no` varchar(20) NOT NULL COMMENT '项目的编号(以众筹的货号加横线加数字组成)',
+  `spec_array` text COMMENT 'json规格数据',
+  `store_nums` int(11) NOT NULL default '0' COMMENT '库存',
+  `market_price` decimal(15,2) NOT NULL default '0.00' COMMENT '市场价格',
+  `sell_price` decimal(15,2) NOT NULL default '0.00' COMMENT '销售价格',
+  `cost_price` decimal(15,2) NOT NULL default '0.00' COMMENT '成本价格',
+  `weight` decimal(15,2) NOT NULL default '0.00' COMMENT '重量',
+  PRIMARY KEY  (`id`),
+  index (`crowd_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='众筹项目表';
+
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}crowd_spec`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_spec`;
+CREATE TABLE `{pre}crowd_spec` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `name` varchar(50) NOT NULL COMMENT '规格名称',
+  `value` text COMMENT '规格值',
+  `type` tinyint(1) NOT NULL default '1' COMMENT '显示类型 1文字 2图片',
+  `note` varchar(255) default NULL COMMENT '备注说明',
+  `is_del` tinyint(1) default '0' COMMENT '是否删除1删除',
+  `seller_id` int(11) default '0' COMMENT '商户ID',
+  PRIMARY KEY  (`id`),
+  index (`is_del`),
+  index (`seller_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='众筹规格表';
+
+-- --------------------------------------------------------
+
+--
+-- 表的结构 `{pre}crowd_spec_photo`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_spec_photo`;
+CREATE TABLE `{pre}crowd_spec_photo` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `address` varchar(255) default NULL COMMENT '图片地址',
+  `name` varchar(100) default NULL COMMENT '图片名称',
+  `create_time` datetime default NULL COMMENT '创建时间',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='众筹规格图片表';
+
+-- --------------------------------------------------------
+--
+-- 表的结构 `{pre}crowd_model`
+--
+
+DROP TABLE IF EXISTS `{pre}crowd_model`;
+CREATE TABLE `{pre}crowd_model` (
+  `id` int(11) unsigned NOT NULL auto_increment COMMENT '模型ID',
+  `name` varchar(50) NOT NULL COMMENT '模型名称',
+  `spec_ids` text COMMENT '规格ID逗号分隔',
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='众筹模型表';
+
+-- --------------------------------------------------------
+
+--
 -- 表的结构 `{pre}crowd`
 --
 
@@ -1645,7 +1749,7 @@ DROP TABLE IF EXISTS `{pre}crowd`;
 CREATE TABLE `{pre}crowd` (
   `id` int(11) unsigned NOT NULL auto_increment COMMENT '众筹ID',
   `category_id` varchar(20) NOT NULL COMMENT '分类ID',
-  `uuid` varchar(20) NOT NULL COMMENT '编号',
+  `crowd_no` varchar(20) NOT NULL COMMENT '项目编号',
   `name` varchar(50) NOT NULL COMMENT '名称',
   `profile` varchar(255) default NULL COMMENT '简述',
   `cover` varchar(255) default NULL COMMENT '封面',
@@ -1703,13 +1807,12 @@ CREATE TABLE `{pre}crowd` (
 #TODO 以下字段准备废弃
   `img` varchar(255) default NULL COMMENT '原图',
   `ad_img` varchar(255) default NULL COMMENT '宣传图',
-  `crowd_no` varchar(20) NOT NULL COMMENT '众筹的编号',
   `weight` decimal(15,2) NOT NULL default '0.00' COMMENT '重量',
   `unit` varchar(10) default NULL COMMENT '计量单位',
   `model_id` int(11) unsigned NOT NULL COMMENT '模型ID',
-  `sell_price` decimal(15,2) NOT NULL COMMENT '销售价格',
-  `market_price` decimal(15,2) default NULL COMMENT '市场价格',
-  `cost_price` decimal(15,2) default NULL COMMENT '成本价格',
+#   `sell_price` decimal(15,2) NOT NULL COMMENT '销售价格',
+#   `market_price` decimal(15,2) default NULL COMMENT '市场价格',
+#   `cost_price` decimal(15,2) default NULL COMMENT '成本价格',
 
   PRIMARY KEY  (`id`),
   index (`seller_id`),
@@ -1891,7 +1994,6 @@ CREATE TABLE `{pre}order` (
 DROP TABLE IF EXISTS `{pre}category`;
 CREATE TABLE `{pre}category` (
   `id` int(11) unsigned NOT NULL auto_increment COMMENT '分类ID',
-  `type` smallint(5) NOT NULL default '0' COMMENT '类型：0-商品 1-众筹 2-商户', # TODO 删除
   `name` varchar(50) NOT NULL COMMENT '分类名称',
   `parent_id` int(11) unsigned NOT NULL COMMENT '父分类ID',
   `sort` smallint(5) NOT NULL default '0' COMMENT '排序',
@@ -2015,14 +2117,14 @@ INSERT INTO `{pre}right` VALUES (NULL, '[众筹]众筹回收站', 'crowd@crowd_r
 INSERT INTO `{pre}right` VALUES (NULL, '[众筹]众筹分类列表', 'crowd@category_list,crowd@category_sort', 0);
 INSERT INTO `{pre}right` VALUES (NULL, '[众筹]众筹分类添加修改', 'crowd@category_edit,crowd@category_save', 0);
 INSERT INTO `{pre}right` VALUES (NULL, '[众筹]众筹分类删除', 'crowd@category_del', 0);
-# INSERT INTO `{pre}right` VALUES (NULL, '[众筹]模型列表', 'crowd@model_list', 0);
-# INSERT INTO `{pre}right` VALUES (NULL, '[众筹]模型添加修改', 'crowd@search_spec,crowd@model_update,crowd@model_edit', 0);
-# INSERT INTO `{pre}right` VALUES (NULL, '[众筹]模型删除', 'crowd@model_del', 0);
-# INSERT INTO `{pre}right` VALUES (NULL, '[众筹]规格列表', 'crowd@spec_list', 0);
-# INSERT INTO `{pre}right` VALUES (NULL, '[众筹]规格添加修改', 'crowd@spec_edit,crowd@spec_update', 0);
-# INSERT INTO `{pre}right` VALUES (NULL, '[众筹]规格删除', 'crowd@spec_del', 0);
-# INSERT INTO `{pre}right` VALUES (NULL, '[众筹]规格图库', 'crowd@spec_photo,crowd@spec_photo_del', 0);
-# INSERT INTO `{pre}right` VALUES (NULL, '[众筹]规格回收站', 'crowd@spec_recycle_list,crowd@spec_recycle_restore,crowd@spec_recycle_del,crowd@spec_del', 0);
+INSERT INTO `{pre}right` VALUES (NULL, '[众筹]模型列表', 'crowd@model_list', 0);
+INSERT INTO `{pre}right` VALUES (NULL, '[众筹]模型添加修改', 'crowd@search_spec,crowd@model_update,crowd@model_edit', 0);
+INSERT INTO `{pre}right` VALUES (NULL, '[众筹]模型删除', 'crowd@model_del', 0);
+INSERT INTO `{pre}right` VALUES (NULL, '[众筹]规格列表', 'crowd@spec_list', 0);
+INSERT INTO `{pre}right` VALUES (NULL, '[众筹]规格添加修改', 'crowd@spec_edit,crowd@spec_update', 0);
+INSERT INTO `{pre}right` VALUES (NULL, '[众筹]规格删除', 'crowd@spec_del', 0);
+INSERT INTO `{pre}right` VALUES (NULL, '[众筹]规格图库', 'crowd@spec_photo,crowd@spec_photo_del', 0);
+INSERT INTO `{pre}right` VALUES (NULL, '[众筹]规格回收站', 'crowd@spec_recycle_list,crowd@spec_recycle_restore,crowd@spec_recycle_del,crowd@spec_del', 0);
 
 INSERT INTO `{pre}right` VALUES (NULL, '[商品]商品列表', 'goods@goods_list', 0);
 INSERT INTO `{pre}right` VALUES (NULL, '[商品]商品添加修改', 'goods@update_price,goods@update_commend,goods@update_store,goods@goods_stats,goods@goods_img_upload,goods@goods_edit,goods@goods_update,goods@member_price,goods@model_init,goods@search_spec,goods@select_spec,goods@collect_import,goods@collect_goods,goods@ajax_sort', 0);
@@ -2211,7 +2313,7 @@ ALTER TABLE `{pre}quick_naviga` ADD foreign key(admin_id) references {pre}admin(
 ALTER TABLE `{pre}oauth_user` ADD foreign key(user_id) references {pre}user(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}online_recharge` ADD foreign key(user_id) references {pre}user(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}products` ADD foreign key(goods_id) references {pre}goods(id) ON UPDATE CASCADE ON DELETE CASCADE;
-ALTER TABLE `{pre}products` ADD foreign key(crowd_id) references {pre}crowd(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `{pre}projects` ADD foreign key(crowd_id) references {pre}crowd(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}point_log` ADD foreign key(user_id) references {pre}user(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}order_log` ADD foreign key(order_id) references {pre}order(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}order_goods` ADD foreign key(order_id) references {pre}order(id) ON UPDATE CASCADE ON DELETE CASCADE;
@@ -2220,9 +2322,11 @@ ALTER TABLE `{pre}notify_registry` ADD  foreign key(goods_id) references {pre}go
 ALTER TABLE `{pre}member` ADD foreign key(user_id) references {pre}user(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}help` ADD foreign key(cat_id) references {pre}help_category(id);
 ALTER TABLE `{pre}group_price` ADD foreign key(goods_id) references {pre}goods(id) ON UPDATE CASCADE ON DELETE CASCADE;
-ALTER TABLE `{pre}group_price` ADD foreign key(crowd_id) references {pre}crowd(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `{pre}crowd_group_price` ADD foreign key(crowd_id) references {pre}crowd(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}group_price` ADD foreign key(group_id) references {pre}user_group(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `{pre}crowd_group_price` ADD foreign key(group_id) references {pre}user_group(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}goods_photo_relation` ADD foreign key(goods_id) references {pre}goods(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE `{pre}crowd_photo_relation` ADD foreign key(crowd_id) references {pre}crowd(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}goods_car` ADD foreign key(user_id) references {pre}user(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}goods_attribute` ADD foreign key(goods_id) references {pre}goods(id) ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE `{pre}crowd_attribute` ADD foreign key(crowd_id) references {pre}crowd(id) ON UPDATE CASCADE ON DELETE CASCADE;
@@ -2235,7 +2339,9 @@ ALTER TABLE `{pre}comment` ADD foreign key(goods_id) references {pre}goods(id) o
 ALTER TABLE `{pre}commend_goods` ADD foreign key(goods_id) references {pre}goods(id) on delete cascade on update cascade;
 ALTER TABLE `{pre}collection_doc` ADD foreign key(order_id) references {pre}order(id) on delete cascade on update cascade;
 ALTER TABLE `{pre}category_extend` ADD  foreign key(goods_id) references {pre}goods(id) on delete cascade on update cascade;
+ALTER TABLE `{pre}crowd_category_extend` ADD  foreign key(crowd_id) references {pre}crowd(id) on delete cascade on update cascade;
 ALTER TABLE `{pre}category_extend` ADD  foreign key(category_id) references {pre}category(id) on delete cascade on update cascade;
+ALTER TABLE `{pre}crowd_category_extend` ADD  foreign key(category_id) references {pre}crowd_category(id) on delete cascade on update cascade;
 ALTER TABLE `{pre}find_password` ADD foreign key(user_id) references {pre}user(id) on delete cascade on update cascade;
 ALTER TABLE `{pre}account_log` ADD foreign key(user_id) references {pre}user(id);
 ALTER TABLE `{pre}address` ADD foreign key(user_id) references {pre}user(id) on delete cascade on update cascade;

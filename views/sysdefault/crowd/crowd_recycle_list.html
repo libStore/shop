@@ -55,10 +55,10 @@
 				{query:name=crowd as go join=left join brand as b on go.brand_id eq b.id where=go.is_del eq 1 fields=go.*,b.name as brand_name order=go.sort asc,go.id desc page=$page id=$crowdHandle}
 				<tr>
 					<td><input name="id[]" type="checkbox" value="{$item['id']}" /></td>
-					<td><a href="{url:/site/products/id/$item[id]}" target="_blank" title="{$item['name']}">{$item['name']}</a></td>
+					<td><a href="{url:/site/projects/id/$item[id]}" target="_blank" title="{$item['name']}">{$item['name']}</a></td>
 					<td>
 					{set:$catName = array()}
-					{query:name=category_extend as ce join=left join category as cd on cd.id eq ce.category_id fields=cd.name where=crowd_id eq $item[id] item=$catData}
+					{query:name=crowd_category_extend as ce join=left join category as cd on cd.id eq ce.category_id fields=cd.name where=crowd_id eq $item[id] item=$catData}
 						{set:$catName[] = $catData['name']}
 					{/query}
 					{echo:join(',',$catName)}

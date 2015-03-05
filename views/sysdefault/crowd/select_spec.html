@@ -67,9 +67,9 @@
 $(function(){
 	{set:$seller_id = IFilter::act(IReq::get('seller_id'));}
 	{if:$seller_id}
-	{query:name=spec where= is_del eq 0 and seller_id eq $seller_id}{/query}
+	{query:name=crowd_spec where= is_del eq 0 and seller_id eq $seller_id}{/query}
 	{else:}
-	{query:name=spec where= is_del eq 0}{/query}
+	{query:name=crowd_spec where= is_del eq 0}{/query}
 	{/if}
 
 	var specListHtml = template.render('specList',{'templateData':{echo:JSON::encode($items)}});

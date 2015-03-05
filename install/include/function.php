@@ -259,15 +259,10 @@ Web::createWebApp($config)->run();
 	//采集并安装测试数据
 	if($install_type == 'all')
 	{
-		//执行采集
-		$web = ROOT_PATH . "/lib/web.php";
-		$config = ROOT_PATH."/config/config.php";
-		$configData = include($config);
-		$configData['basePath'] = ROOT_PATH;
-		$configData['interceptor'] = array("installTestData@onCreateController");
-
-		require($web);
-		Web::createWebApp($configData)->run();
+		//检测SQL安装文件
+		$sql_data = ROOT_PATH.'./install/install_data.sql';
+		//安装SQL
+		parseSQL($sql_data);
 	}
 	//执行完毕
 	showProgress(array('isError' => false,'message' => '安装完成','percent' => 1));

@@ -155,7 +155,7 @@ class Crowd extends IController
 	    		}
 
 	    		//初始化Model表类对象
-	    		$modelObj = new IModel("model");
+	    		$modelObj = new IModel("crowd_model");
 
 	    		//删除众筹模型
 				$result = $modelObj->del("id = ".$val);
@@ -191,14 +191,14 @@ class Crowd extends IController
 		}
 		else if($model_id)
 		{
-			$modelObj  = new IModel('model');
+			$modelObj  = new IModel('crowd_model');
 			$modelInfo = $modelObj->getObj('id = '.$model_id,'spec_ids');
 			$specId    = $modelInfo['spec_ids'] ? $modelInfo['spec_ids'] : '';
 		}
 
 		if($specId)
 		{
-			$specObj = new IModel('spec');
+			$specObj = new IModel('crowd_spec');
 			$data['specData'] = $specObj->query('id in ('.trim($specId,',').')');
 		}
 
@@ -213,7 +213,7 @@ class Crowd extends IController
 		$this->layout = '';
 
 		$crowd_id   = IFilter::act(IReq::get('crowd_id'),'int');
-		$product_id = IFilter::act(IReq::get('product_id'),'int');
+		$project_id = IFilter::act(IReq::get('project_id'),'int');
 		$sell_price = IFilter::act(IReq::get('sell_price'),'float');
 
 		$date = array(
@@ -223,9 +223,9 @@ class Crowd extends IController
 		if($crowd_id)
 		{
 			$where  = 'crowd_id = '.$crowd_id;
-			$where .= $product_id ? ' and product_id = '.$product_id : '';
+			$where .= $project_id ? ' and project_id = '.$project_id : '';
 
-			$priceRelationObject = new IModel('group_price');
+			$priceRelationObject = new IModel('crowd_group_price');
 			$priceData = $priceRelationObject->query($where);
 			$date['price_relation'] = $priceData;
 		}
@@ -542,7 +542,7 @@ class Crowd extends IController
 				exit;
 			}
 
-			$tb_category_extend  = new IModel('category_extend');
+			$tb_category_extend  = new IModel('crowd_category_extend');
 			$cate_ext = $tb_category_extend->getObj('category_id = '.$category_id);
 
 			//要删除的分类下还有众筹
@@ -603,7 +603,7 @@ class Crowd extends IController
 
 		if($id)
 		{
-			$obj     = new IModel('spec');
+			$obj     = new IModel('crowd_spec');
 			$dataRow = $obj->getObj("id = {$id}");
 		}
 
@@ -678,7 +678,7 @@ class Crowd extends IController
     	}
     	else
     	{
-    		$obj = new IModel('spec');
+    		$obj = new IModel('crowd_spec');
 
 			//执行操作
 	    	$obj->setData($editData);
@@ -719,7 +719,7 @@ class Crowd extends IController
     	$id = IFilter::act(IReq::get('id'));
 		if($id)
 		{
-			$obj = new IModel('spec');
+			$obj = new IModel('crowd_spec');
 			$obj->setData(array('is_del'=>1));
 			$obj->update(Util::joinStr($id));
 			$this->redirect('spec_list');
@@ -736,7 +736,7 @@ class Crowd extends IController
     	$id = IFilter::act(IReq::get('id'),'int');
 		if($id)
 		{
-			$obj = new IModel('spec');
+			$obj = new IModel('crowd_spec');
 			$obj->del(Util::joinStr($id));
 			$this->redirect('spec_recycle_list');
 		}
@@ -752,7 +752,7 @@ class Crowd extends IController
     	$id = IReq::get('id');
 		if(!empty($id))
 		{
-			$obj = new IModel('spec');
+			$obj = new IModel('crowd_spec');
 			$obj->setData(array('is_del'=>0));
 			$obj->update(Util::joinStr($id));
 			$this->redirect('spec_recycle_list');
@@ -769,7 +769,7 @@ class Crowd extends IController
     	$id = IReq::get('id','post');
     	if(isset($id[0]) && $id[0]!='')
     	{
-    		$obj = new IModel('spec_photo');
+    		$obj = new IModel('crowd_spec_photo');
     		$id_str = '';
     		foreach($id as $rs)
     		{
@@ -943,11 +943,11 @@ class Crowd extends IController
 		//货品方式
 		if($crowd_id)
 		{
-			$productDB = new IModel('products');
+			$projectDB = new IModel('projects');
 			foreach($data as $key => $val)
 			{
-				$productDB->setData(array('store_nums' => $val));
-				$productDB->update('id = '.$key);
+				$projectDB->setData(array('store_nums' => $val));
+				$projectDB->update('id = '.$key);
 			}
 		}
 		else
@@ -976,12 +976,12 @@ class Crowd extends IController
 		//货品方式
 		if($crowd_id)
 		{
-			$productDB  = new IModel('products');
+			$projectDB  = new IModel('projects');
 			$updateData = current($data);
 			foreach($data as $pid => $item)
 			{
-				$productDB->setData($item);
-				$productDB->update("id = ".$pid);
+				$projectDB->setData($item);
+				$projectDB->update("id = ".$pid);
 			}
 		}
 		else
@@ -1006,7 +1006,7 @@ class Crowd extends IController
 			die(JSON::encode(array('result' => 'fail','data' => '众筹数据不存在')));
 		}
 
-		$crowdCommendDB = new IModel('commend_crowd');
+		$crowdCommendDB = new IModel('crowd_commend');
 
 		//清理旧的commend数据
 		$crowdIdArray = array_keys($data);
